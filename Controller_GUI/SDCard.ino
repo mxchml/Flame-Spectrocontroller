@@ -16,9 +16,7 @@ void calculateWattsfromCounts() {
   Serial.println(millis());
   
   File spectrumFile = SD.open(fileName, FILE_READ);    // get integration time from spectrum file
-  File deltaFile = SD.open("calDelta.TXT", FILE_READ); 
   File backgroundFile = SD.open("backG.TXT", FILE_READ);
-  File calibrationFile = SD.open("sCalFile.TXT", FILE_READ);
 
   char integrationTimeText[10];
   int charPosition = 0;
@@ -45,20 +43,8 @@ void calculateWattsfromCounts() {
         break;
       }
     }
-    while (deltaFile.available()){
-      char c = deltaFile.read();
-      if (c == ','){
-        break;
-      }
-    }
     while (backgroundFile.available()){
       char c = backgroundFile.read();
-      if (c == ','){
-        break;
-      }      
-    }
-    while (calibrationFile.available()){
-      char c = calibrationFile.read();
       if (c == ','){
         break;
       }      
@@ -102,53 +88,13 @@ void calculateWattsfromCounts() {
       }
     }
     backgroundText[charPosition] = '\0';
-    char deltaText[10];
-    charPosition = 0;
-    
-    while (deltaFile.available()) {
-      char c = deltaFile.read();
-      if (isDigit(c)){
-        deltaText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        deltaText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-
-    deltaText[charPosition] = '\0';
-    double deltaNumber = atof(deltaText);
-    
     int backgroundNumber = atoi(backgroundText);
-    
-    charPosition = 0;
-    char calibrationText[20];
-    
-    while (calibrationFile.available()) {
-      char c = calibrationFile.read();
-      if (isDigit(c)){
-        calibrationText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        calibrationText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    calibrationText[charPosition] = '\0';
-    double calibrationNumber = atof(calibrationText); 
+
     double pixelPower = pixelNumber - backgroundNumber;
-    pixelPower = calibrationNumber * pixelPower; 
+    pixelPower = calibrationFactorsHard[i] * pixelPower; 
     pixelPower = pixelPower / 0.119460; 
     pixelPower = pixelPower / integrationTimeFloat;
-    pixelPower = pixelPower / deltaNumber;
+    pixelPower = pixelPower / wavelengthDeltaHard[i];
     uvPower = pixelPower + uvPower;
   }
 
@@ -191,53 +137,13 @@ void calculateWattsfromCounts() {
       }
     }
     backgroundText[charPosition] = '\0';
-    char deltaText[10];
-    charPosition = 0;
-    
-    while (deltaFile.available()) {
-      char c = deltaFile.read();
-      if (isDigit(c)){
-        deltaText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        deltaText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-
-    deltaText[charPosition] = '\0';
-    double deltaNumber = atof(deltaText);
-    
     int backgroundNumber = atoi(backgroundText);
     
-    charPosition = 0;
-    char calibrationText[20];
-    
-    while (calibrationFile.available()) {
-      char c = calibrationFile.read();
-      if (isDigit(c)){
-        calibrationText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        calibrationText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    calibrationText[charPosition] = '\0';
-    double calibrationNumber = atof(calibrationText);
     double pixelPower = pixelNumber - backgroundNumber;
-    pixelPower = calibrationNumber * pixelPower;
+    pixelPower = calibrationFactorsHard[i] * pixelPower;
     pixelPower = pixelPower / 0.119460;
     pixelPower = pixelPower / integrationTimeFloat;
-    pixelPower = pixelPower / deltaNumber;
+    pixelPower = pixelPower / wavelengthDeltaHard[i];
     bluePower = pixelPower + bluePower;
   }
 
@@ -280,53 +186,13 @@ void calculateWattsfromCounts() {
       }
     }
     backgroundText[charPosition] = '\0';
-    char deltaText[10];
-    charPosition = 0;
-    
-    while (deltaFile.available()) {
-      char c = deltaFile.read();
-      if (isDigit(c)){
-        deltaText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        deltaText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-
-    deltaText[charPosition] = '\0';
-    double deltaNumber = atof(deltaText);
-    
     int backgroundNumber = atoi(backgroundText);
-    
-    charPosition = 0;
-    char calibrationText[20];
-    
-    while (calibrationFile.available()) {
-      char c = calibrationFile.read();
-      if (isDigit(c)){
-        calibrationText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        calibrationText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    calibrationText[charPosition] = '\0';
-    double calibrationNumber = atof(calibrationText);
+
     double pixelPower = pixelNumber - backgroundNumber;
-    pixelPower = calibrationNumber * pixelPower;
+    pixelPower = calibrationFactorsHard[i] * pixelPower;
     pixelPower = pixelPower / 0.119460;
     pixelPower = pixelPower / integrationTimeFloat;
-    pixelPower = pixelPower / deltaNumber;
+    pixelPower = pixelPower / wavelengthDeltaHard[i];
     greenPower = pixelPower + greenPower;
   }
 
@@ -369,61 +235,15 @@ void calculateWattsfromCounts() {
       }
     }
     backgroundText[charPosition] = '\0';
-    char deltaText[10];
-    charPosition = 0;
-    
-    while (deltaFile.available()) {
-      char c = deltaFile.read();
-      if (isDigit(c)){
-        deltaText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        deltaText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-
-    deltaText[charPosition] = '\0';
-    double deltaNumber = atof(deltaText);
-    
     int backgroundNumber = atoi(backgroundText);
-    
-    charPosition = 0;
-    char calibrationText[20];
-    
-    while (calibrationFile.available()) {
-      char c = calibrationFile.read();
-      if (isDigit(c)){
-        calibrationText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        calibrationText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    calibrationText[charPosition] = '\0';
-    double calibrationNumber = atof(calibrationText);
+
     double pixelPower = pixelNumber - backgroundNumber;
-    pixelPower = calibrationNumber * pixelPower;
+    pixelPower = calibrationFactorsHard[i] * pixelPower;
     pixelPower = pixelPower / 0.119460;
     pixelPower = pixelPower / integrationTimeFloat;
-    pixelPower = pixelPower / deltaNumber;
+    pixelPower = pixelPower / wavelengthDeltaHard[i];
     redPower = pixelPower + redPower;
   }
-  /*
-  uvPower = uvPower/1000000;
-  bluePower = bluePower/1000000;
-  greenPower = greenPower/1000000;
-  redPower = redPower/1000000;
-  */
   
   Serial.println(uvPower, 10);
   Serial.println(bluePower, 10);
