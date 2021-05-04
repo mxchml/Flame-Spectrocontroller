@@ -10,6 +10,32 @@ void startSDCard(){
   root = SD.open("/");
 }
 
+double pixelPower(double pixelNumber, double backgroundNumber, double integrationTimeFloat, int i) {
+    double pixelPower = pixelNumber - backgroundNumber;
+    pixelPower *= pgm_read_float(calibrationFactorsHard + i);
+    pixelPower /= 0.119460; 
+    pixelPower /= integrationTimeFloat;
+    pixelPower /= pgm_read_float(wavelengthDeltaHard + i);
+    return pixelPower;
+}
+
+double parseFromFile(File& file) {
+    char pixelText[10];
+    int i = 0;
+    
+    while (file.available()){
+      char c = file.read();
+      if (isDigit(c) || c == '.'){
+        pixelText[i++] = c;
+      }
+      else if (c == ','){
+        break;
+      }
+    }
+    pixelText[i] = '\0';
+    return atof(pixelText);
+}
+
 void calculateWattsfromCounts() {
 
   Serial.print("Start:\t");
@@ -18,231 +44,37 @@ void calculateWattsfromCounts() {
   File spectrumFile = SD.open(fileName, FILE_READ);    // get integration time from spectrum file
   File backgroundFile = SD.open("backG.TXT", FILE_READ);
 
-  char integrationTimeText[10];
-  int charPosition = 0;
-  while (spectrumFile.available()){
-    char c = spectrumFile.read();
-    if(c == ','){
-      break;
-    }
-    else if (isDigit(c)){
-      integrationTimeText[charPosition] = c;
-      charPosition++;
-    }
-  }
-  
-  integrationTimeText[charPosition+1] = '\0';
-  double integrationTimeFloat = atoi(integrationTimeText);
+  double integrationTimeFloat = parseFromFile(spectrumFile);
   integrationTimeFloat = integrationTimeFloat/1000; 
   int i=0;
   
   for(i; i < 56; i++){
-    while (spectrumFile.available()){
-      char c = spectrumFile.read();      
-      if (c == ','){
-        break;
-      }
-    }
-    while (backgroundFile.available()){
-      char c = backgroundFile.read();
-      if (c == ','){
-        break;
-      }      
-    }
+    parseFromFile(spectrumFile);
+    parseFromFile(backgroundFile);
   }
+
   for(i; i < 602; i++){
-    char pixelText[10];
-
-    charPosition = 0;
-    while (spectrumFile.available()){
-      char c = spectrumFile.read();
-      if (isDigit(c)){
-        pixelText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        pixelText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    pixelText[charPosition] = '\0';
-    int pixelNumber = atoi(pixelText);
-    charPosition = 0;
-    char backgroundText[10];
-    
-    while (backgroundFile.available()) {
-      char c = backgroundFile.read();
-      if (isDigit(c)){
-        backgroundText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        backgroundText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    backgroundText[charPosition] = '\0';
-    int backgroundNumber = atoi(backgroundText);
-
-    double pixelPower = pixelNumber - backgroundNumber;
-    pixelPower = calibrationFactorsHard[i] * pixelPower; 
-    pixelPower = pixelPower / 0.119460; 
-    pixelPower = pixelPower / integrationTimeFloat;
-    pixelPower = pixelPower / wavelengthDeltaHard[i];
-    uvPower = pixelPower + uvPower;
+    double pixelNumber = parseFromFile(spectrumFile);
+    double backgroundNumber = parseFromFile(backgroundFile);
+    uvPower += pixelPower(pixelNumber, backgroundNumber, integrationTimeFloat, i);
   }
 
   for(i; i < 887; i++){
-    char pixelText[10];
-
-    charPosition = 0;
-    while (spectrumFile.available()){
-      char c = spectrumFile.read();
-      if (isDigit(c)){
-        pixelText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        pixelText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    pixelText[charPosition] = '\0';
-    int pixelNumber = atoi(pixelText);
-    
-    charPosition = 0;
-    char backgroundText[10];
-    
-    while (backgroundFile.available()) {
-      char c = backgroundFile.read();
-      if (isDigit(c)){
-        backgroundText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        backgroundText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    backgroundText[charPosition] = '\0';
-    int backgroundNumber = atoi(backgroundText);
-    
-    double pixelPower = pixelNumber - backgroundNumber;
-    pixelPower = calibrationFactorsHard[i] * pixelPower;
-    pixelPower = pixelPower / 0.119460;
-    pixelPower = pixelPower / integrationTimeFloat;
-    pixelPower = pixelPower / wavelengthDeltaHard[i];
-    bluePower = pixelPower + bluePower;
+    double pixelNumber = parseFromFile(spectrumFile);
+    double backgroundNumber = parseFromFile(backgroundFile);
+    bluePower += pixelPower(pixelNumber, backgroundNumber, integrationTimeFloat, i);
   }
 
   for(i; i < 1182; i++){
-    char pixelText[10];
-
-    charPosition = 0;
-    while (spectrumFile.available()){
-      char c = spectrumFile.read();
-      if (isDigit(c)){
-        pixelText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        pixelText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    pixelText[charPosition] = '\0';
-    int pixelNumber = atoi(pixelText);
-    
-    charPosition = 0;
-    char backgroundText[10];
-    
-    while (backgroundFile.available()) {
-      char c = backgroundFile.read();
-      if (isDigit(c)){
-        backgroundText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        backgroundText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    backgroundText[charPosition] = '\0';
-    int backgroundNumber = atoi(backgroundText);
-
-    double pixelPower = pixelNumber - backgroundNumber;
-    pixelPower = calibrationFactorsHard[i] * pixelPower;
-    pixelPower = pixelPower / 0.119460;
-    pixelPower = pixelPower / integrationTimeFloat;
-    pixelPower = pixelPower / wavelengthDeltaHard[i];
-    greenPower = pixelPower + greenPower;
+    double pixelNumber = parseFromFile(spectrumFile);
+    double backgroundNumber = parseFromFile(backgroundFile);
+    greenPower += pixelPower(pixelNumber, backgroundNumber, integrationTimeFloat, i);
   }
 
   for(i; i < 1488; i++){
-    char pixelText[10];
-
-    charPosition = 0;
-    while (spectrumFile.available()){
-      char c = spectrumFile.read();
-      if (isDigit(c)){
-        pixelText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        pixelText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    pixelText[charPosition] = '\0';
-    int pixelNumber = atoi(pixelText);
-    
-    charPosition = 0;
-    char backgroundText[10];
-    
-    while (backgroundFile.available()) {
-      char c = backgroundFile.read();
-      if (isDigit(c)){
-        backgroundText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == '.'){
-        backgroundText[charPosition] = c;
-        charPosition++;
-      }
-      else if (c == ','){
-        break;
-      }
-    }
-    backgroundText[charPosition] = '\0';
-    int backgroundNumber = atoi(backgroundText);
-
-    double pixelPower = pixelNumber - backgroundNumber;
-    pixelPower = calibrationFactorsHard[i] * pixelPower;
-    pixelPower = pixelPower / 0.119460;
-    pixelPower = pixelPower / integrationTimeFloat;
-    pixelPower = pixelPower / wavelengthDeltaHard[i];
-    redPower = pixelPower + redPower;
+    double pixelNumber = parseFromFile(spectrumFile);
+    double backgroundNumber = parseFromFile(backgroundFile);
+    redPower += pixelPower(pixelNumber, backgroundNumber, integrationTimeFloat, i);
   }
   
   Serial.println(uvPower, 10);
@@ -287,13 +119,5 @@ void printDirectory(File dir, int numTabs) {
       Serial.println(entry.size(), DEC);
     }
     entry.close();
-  }
-}
-
-void stopSpinning() {
-  bool stopThis = 1;
-  while(stopThis){
-    Serial.println("Emergency brake deployed");
-    delay(2000);
   }
 }

@@ -76,7 +76,7 @@ void loop() {
   screenControl();
 }
 
-const double calibrationFactorsHard[2048] PROGMEM = {0,
+const double calibrationFactorsHard[] PROGMEM = {0,
 0,
 0,
 0,
@@ -2125,7 +2125,7 @@ const double calibrationFactorsHard[2048] PROGMEM = {0,
 0.00016850323,
 0.00016851213};
 
-const double wavelengthDeltaHard[2048] PROGMEM = {0.3779,
+const double wavelengthDeltaHard[] PROGMEM = {0.3779,
 0.37787,
 0.37783,
 0.3778,
