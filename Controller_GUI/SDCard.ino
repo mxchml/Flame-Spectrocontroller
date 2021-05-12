@@ -52,7 +52,7 @@ void calculateWattsfromCounts() {
     parseFromFile(spectrumFile);
     parseFromFile(backgroundFile);
   }
-
+  
   for(i; i < 602; i++){
     double pixelNumber = parseFromFile(spectrumFile);
     double backgroundNumber = parseFromFile(backgroundFile);
