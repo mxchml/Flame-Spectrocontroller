@@ -6,7 +6,7 @@
 #include "time.h"
 #include "Wire.h"
 
-#define SD_SPECTRO_CS 53
+#define SD_SPECTRO_CS 52
 
 //Screen
 #define PWM_PIN 8

@@ -244,25 +244,25 @@ void singleMeasure3(){
     myTFT.text("AVERAGES    (uW/cm2)", 5,57);
     
     myTFT.text("200-400nm: ", 5, 67);
-    dtostrf(uvPower, sizeof outputChar, 2, outputChar);
+    //dtostrf(uvPower, sizeof outputChar, 2, outputChar);
     myTFT.text(outputChar,-5,67);
     Serial.println(uvPower);
     Serial.println(outputChar);
     
     myTFT.text("400-500nm: ", 5, 77);
-    dtostrf(bluePower, sizeof outputChar, 2, outputChar);
+    //dtostrf(bluePower, sizeof outputChar, 2, outputChar);
     myTFT.text(outputChar,-5,77);
     Serial.println(bluePower);
     Serial.println(outputChar);
     
     myTFT.text("500-600nm: ", 5, 87);
-    dtostrf(greenPower, sizeof outputChar, 2, outputChar);
+    //dtostrf(greenPower, sizeof outputChar, 2, outputChar);
     myTFT.text(outputChar,-5,87);
     Serial.println(greenPower);
     Serial.println(outputChar);
     
     myTFT.text("600-700nm: ", 5, 97);
-    dtostrf(redPower, sizeof outputChar, 2, outputChar);
+    //dtostrf(redPower, sizeof outputChar, 2, outputChar);
     myTFT.text(outputChar,-5,97);
     Serial.println(redPower);
     Serial.println(outputChar);
@@ -378,25 +378,25 @@ void storedMeasures(){
     myTFT.text("AVERAGES    (uW/cm2)", 5,57);
     
     myTFT.text("200-400nm: ", 5, 67);
-    dtostrf(uvPower, sizeof outputChar, 2, outputChar);
+    //dtostrf(uvPower, sizeof outputChar, 2, outputChar);
     myTFT.text(outputChar,-5,67);
     Serial.println(uvPower);
     Serial.println(outputChar);
     
     myTFT.text("400-500nm: ", 5, 77);
-    dtostrf(bluePower, sizeof outputChar, 2, outputChar);
+    //dtostrf(bluePower, sizeof outputChar, 2, outputChar);
     myTFT.text(outputChar,-5,77);
     Serial.println(bluePower);
     Serial.println(outputChar);
     
     myTFT.text("500-600nm: ", 5, 87);
-    dtostrf(greenPower, sizeof outputChar, 2, outputChar);
+    //dtostrf(greenPower, sizeof outputChar, 2, outputChar);
     myTFT.text(outputChar,-5,87);
     Serial.println(greenPower);
     Serial.println(outputChar);
     
     myTFT.text("600-700nm: ", 5, 97);
-    dtostrf(redPower, sizeof outputChar, 2, outputChar);
+    //dtostrf(redPower, sizeof outputChar, 2, outputChar);
     myTFT.text(outputChar,-5,97);
     Serial.println(redPower);
     Serial.println(outputChar);
