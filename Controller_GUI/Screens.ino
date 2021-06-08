@@ -140,8 +140,9 @@ void darkSpectrum2(){
     myTFT.stroke(255,255,255);
     myTFT.text("Taking dark spectrum",5,37);
     myTFT.text("...", 5, 47);
-    
-    delay(2000);
+    setFileName();
+    readSpectrum();
+    saveBackgroundSpectrum();
     exitCondition = 1; 
     flickerControl = 1;
   }

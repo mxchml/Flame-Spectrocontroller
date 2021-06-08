@@ -36,56 +36,6 @@ double parseFromFile(File& file) {
     return atof(pixelText);
 }
 
-void calculateWattsfromCounts() {
-
-  Serial.print("Start:\t");
-  Serial.println(millis());
-  
-  File spectrumFile = SD.open(fileName, FILE_READ);    // get integration time from spectrum file
-  File backgroundFile = SD.open("backG.TXT", FILE_READ);
-
-  double integrationTimeFloat = parseFromFile(spectrumFile);
-  integrationTimeFloat = integrationTimeFloat/1000; 
-  int i=0;
-  
-  for(i; i < 56; i++){
-    parseFromFile(spectrumFile);
-    parseFromFile(backgroundFile);
-  }
-  
-  for(i; i < 602; i++){
-    double pixelNumber = parseFromFile(spectrumFile);
-    double backgroundNumber = parseFromFile(backgroundFile);
-    uvPower += pixelPower(pixelNumber, backgroundNumber, integrationTimeFloat, i);
-  }
-
-  for(i; i < 887; i++){
-    double pixelNumber = parseFromFile(spectrumFile);
-    double backgroundNumber = parseFromFile(backgroundFile);
-    bluePower += pixelPower(pixelNumber, backgroundNumber, integrationTimeFloat, i);
-  }
-
-  for(i; i < 1182; i++){
-    double pixelNumber = parseFromFile(spectrumFile);
-    double backgroundNumber = parseFromFile(backgroundFile);
-    greenPower += pixelPower(pixelNumber, backgroundNumber, integrationTimeFloat, i);
-  }
-
-  for(i; i < 1488; i++){
-    double pixelNumber = parseFromFile(spectrumFile);
-    double backgroundNumber = parseFromFile(backgroundFile);
-    redPower += pixelPower(pixelNumber, backgroundNumber, integrationTimeFloat, i);
-  }
-  
-  Serial.println(uvPower, 10);
-  Serial.println(bluePower, 10);
-  Serial.println(greenPower, 10);
-  Serial.println(redPower, 10);
-           
-  Serial.print("End:\t");
-  Serial.println(millis());
-}
-
 void readRawFile() {
   File file = SD.open("GH2count.TXT", FILE_READ);
   int counter = 0;

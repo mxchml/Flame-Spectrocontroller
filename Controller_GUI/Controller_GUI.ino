@@ -6,7 +6,7 @@
 #include "time.h"
 #include "Wire.h"
 
-#define SD_SPECTRO_CS 52
+#define SD_SPECTRO_CS 3
 
 //Screen
 #define PWM_PIN 8
@@ -30,7 +30,7 @@ int textSize = 1;
 int exitCondition = 0;
 
 //Clock
-RTC_DS1307 rtc;
+RTC_DS3231 rtc;
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 char timeStamp[] = "DDD_ DD MMM YYYY hh_mm_ss";
 char TIME[20];
@@ -42,7 +42,12 @@ TFT myTFT = TFT(CS_PIN, DC_PIN, 3);
 File root;
 int fileCounter = 0;
 int fileSelection = 5;
-char fileName[13] = "GH2count.TXT";
+
+//Data Handlers
+char compressor;
+char fileName[13] = "";
+char backFileName[13] = "backG.TXT";
+word maxValue;
 
 //Spectrum Capture Handlers
 word integrationTime = 0;
@@ -65,7 +70,6 @@ void setup() {
   startSDCard();
   beginRTC();
   initializeScreen();
-  calculateWattsfromCounts();
 }
 
 void loop() {

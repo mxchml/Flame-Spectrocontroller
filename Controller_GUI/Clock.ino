@@ -1,8 +1,13 @@
 void beginRTC(){
   //start the rtc clock and set the time to the computer time
-  rtc.begin();
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  Serial.println("Real time clock is active");
+  if (rtc.begin()) {
+    rtc.adjust(DateTime(__DATE__, __TIME__));
+    Serial.println("Real time clock is active");
+    DateTime dt = rtc.now();
+    Serial.println(dt.year());
+    Serial.println(dt.month());
+    Serial.println(dt.day());
+  }
 }
 
 void timeTextTFT(){
