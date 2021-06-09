@@ -8,11 +8,11 @@ void screenControl(){
       break;
     case 2: mainMenu();
       break;
-    case 3: darkSpectrum1();
+    case 3: backSpectrum1();
       break;
-    case 4: darkSpectrum2();
+    case 4: backSpectrum2();
       break;
-    case 5: darkSpectrum3();
+    case 5: backSpectrum3();
       break;
     case 6: singleMeasure1();
       break;
@@ -86,7 +86,7 @@ void mainMenu(){
       myTFT.rect(3,82,74,41);
       myTFT.rect(3,35,74,41);
       myTFT.stroke(255,255,255);  //text
-      myTFT.text("Take Dark",14,45);
+      myTFT.text("Take Back",14,45);
       myTFT.text("Spectrum",14,55);
       myTFT.text("Take Single",87,45);
       myTFT.text("Measure",100,55);
@@ -98,7 +98,7 @@ void mainMenu(){
     }
 }
 
-void darkSpectrum1(){
+void backSpectrum1(){
   if(blue == 1){
     screenSelect = 4;
     blue = 0;
@@ -121,7 +121,7 @@ void darkSpectrum1(){
   timeTextTFT();
 }
 
-void darkSpectrum2(){
+void backSpectrum2(){
   if(exitCondition == 1){
     screenSelect = 5;
     flickerControl = 0;
@@ -138,18 +138,19 @@ void darkSpectrum2(){
     screenTemplate(1);
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
-    myTFT.text("Taking dark spectrum",5,37);
+    myTFT.text("Taking back spectrum",5,37);
     myTFT.text("...", 5, 47);
-    setFileName();
-    readSpectrum();
-    saveBackgroundSpectrum();
+    setBackgroundFileName();
+    setIntegrationTime();
+    readBackSpectrum();
+    Serial.println(maximum(backSpectrum));
     exitCondition = 1; 
     flickerControl = 1;
   }
   timeTextTFT();
 }
 
-void darkSpectrum3(){
+void backSpectrum3(){
   if(blue == 1){
     screenSelect = 2;
     blue = 0;
@@ -164,8 +165,9 @@ void darkSpectrum3(){
     screenTemplate(1);
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
-    myTFT.text("Dark Spectrum Complete",5,37);
+    myTFT.text("Back Spectrum Complete",5,37);
     myTFT.text("Filename:", 5, 47);
+    myTFT.text(backFileName, 5,57);
     myTFT.text("> Push BLUE for main menu", 4, 115);
     flickerControl = 1;
   }
@@ -190,8 +192,10 @@ void singleMeasure1(){
     screenTemplate(2);
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
-    myTFT.text("Dark Spectrum File: ",5,37);
-    myTFT.text("Taken on: ", 5, 47);
+    myTFT.text("Back Spectrum File: ",5,37);
+    myTFT.text(backFileName, 5, 47);
+    myTFT.text("Taken on: ", 5, 67);
+    myTFT.text(backMeasurementTime, 5, 77);
     myTFT.text("> Push BLUE for new DS", 4, 105);
     myTFT.text("> Push GREEN to measure", 4, 115);
     flickerControl = 1;
@@ -218,12 +222,17 @@ void singleMeasure2(){
     myTFT.stroke(255,255,255);
     myTFT.text("Keep inlet fixed",5,37);
     myTFT.text("Taking measurement...", 5, 47);
-    delay(2000);
+    setFileName();
+    setIntegrationTime();
+    readSpectrum();
+    Serial.println(maximum(spectrum));
+    calWattsfromCounts();
     exitCondition = 1; 
     flickerControl = 1;
   }
   timeTextTFT();
 }
+
 void singleMeasure3(){
   if(blue == 1){
     screenSelect = 2;
@@ -243,28 +252,27 @@ void singleMeasure3(){
     myTFT.text("Measurement",5,37);
     myTFT.text("Filename: ", 5, 47);
     myTFT.text("AVERAGES    (uW/cm2)", 5,57);
-    
     myTFT.text("200-400nm: ", 5, 67);
-    //dtostrf(uvPower, sizeof outputChar, 2, outputChar);
-    myTFT.text(outputChar,-5,67);
+    dtostrf(uvPower, sizeof(outputChar), 2, outputChar);
+    myTFT.text(outputChar,5,67);
     Serial.println(uvPower);
     Serial.println(outputChar);
     
     myTFT.text("400-500nm: ", 5, 77);
-    //dtostrf(bluePower, sizeof outputChar, 2, outputChar);
-    myTFT.text(outputChar,-5,77);
+    dtostrf(bluePower, sizeof(outputChar), 2, outputChar);
+    myTFT.text(outputChar,5,77);
     Serial.println(bluePower);
     Serial.println(outputChar);
     
     myTFT.text("500-600nm: ", 5, 87);
-    //dtostrf(greenPower, sizeof outputChar, 2, outputChar);
-    myTFT.text(outputChar,-5,87);
+    dtostrf(greenPower, sizeof(outputChar), 2, outputChar);
+    myTFT.text(outputChar,5,87);
     Serial.println(greenPower);
     Serial.println(outputChar);
     
     myTFT.text("600-700nm: ", 5, 97);
-    //dtostrf(redPower, sizeof outputChar, 2, outputChar);
-    myTFT.text(outputChar,-5,97);
+    dtostrf(redPower, sizeof(outputChar), 2, outputChar);
+    myTFT.text(outputChar,5,97);
     Serial.println(redPower);
     Serial.println(outputChar);
         
@@ -292,7 +300,7 @@ void sampleSession1(){
     screenTemplate(3);
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
-    myTFT.text("Dark Spectrum File: ",5,37);
+    myTFT.text("back Spectrum File: ",5,37);
     myTFT.text("Taken on: ", 5, 47);
     myTFT.text("> Push BLUE for new DS", 4, 105);
     myTFT.text("> Push YELLOW to start", 4, 115);
@@ -418,7 +426,7 @@ void screenTemplate(int screen){
       strcpy(title, "Main");
       break;
     case 1:
-      strcpy(title,"Dark S");
+      strcpy(title,"Back S");
       blue = 255;
       break;
     case 2:
