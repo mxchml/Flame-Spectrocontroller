@@ -4,7 +4,6 @@ void buttonsStart(){
   pinMode(BUTTON_RED, INPUT_PULLUP);
   pinMode(BUTTON_YELLOW, INPUT_PULLUP);
 }
-
 void yellowButtonPush(){
   int buttonValue = digitalRead(BUTTON_YELLOW);
   if (buttonValue == LOW){

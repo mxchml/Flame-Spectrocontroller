@@ -1,7 +1,6 @@
 void initializeScreen(){
     myTFT.begin();
 }
-
 void screenControl(){
   switch(screenSelect){
     case 1: introScreen();
@@ -30,7 +29,6 @@ void screenControl(){
       break;
   }
 }
-
 void introScreen(){
   myTFT.background(0,0,0);
   myTFT.fill(255,255,255);
@@ -52,7 +50,6 @@ void introScreen(){
   delay(1);
   screenSelect = 2;
 }
-
 void mainMenu(){
     if(blue == 1){
       screenSelect = 3;
@@ -97,7 +94,6 @@ void mainMenu(){
       flickerControl = 1;
     }
 }
-
 void backSpectrum1(){
   if(blue == 1){
     screenSelect = 4;
@@ -120,7 +116,6 @@ void backSpectrum1(){
   }
   timeTextTFT();
 }
-
 void backSpectrum2(){
   if(exitCondition == 1){
     screenSelect = 5;
@@ -141,7 +136,7 @@ void backSpectrum2(){
     myTFT.text("Taking back spectrum",5,37);
     myTFT.text("...", 5, 47);
     setBackgroundFileName();
-    setIntegrationTime();
+    setBackgroundIntegrationTime();
     readBackSpectrum();
     Serial.println(maximum(backSpectrum));
     exitCondition = 1; 
@@ -149,7 +144,6 @@ void backSpectrum2(){
   }
   timeTextTFT();
 }
-
 void backSpectrum3(){
   if(blue == 1){
     screenSelect = 2;
@@ -173,7 +167,6 @@ void backSpectrum3(){
   }
   timeTextTFT();
 }
-
 void singleMeasure1(){
   if(blue == 1){
     screenSelect = 3;
@@ -202,7 +195,6 @@ void singleMeasure1(){
   }
   timeTextTFT();
 }
-
 void singleMeasure2(){
   if(exitCondition == 1){
     screenSelect = 8;
@@ -232,7 +224,6 @@ void singleMeasure2(){
   }
   timeTextTFT();
 }
-
 void singleMeasure3(){
   if(blue == 1){
     screenSelect = 2;
@@ -281,7 +272,6 @@ void singleMeasure3(){
   }
   timeTextTFT();
 }
-
 void sampleSession1(){
   if(blue == 1){
     screenSelect = 3;
@@ -308,7 +298,6 @@ void sampleSession1(){
   }
   timeTextTFT();
 }
-
 void sampleSession2(){
   if(yellow == 1){
     screenSelect = 11;
@@ -331,7 +320,6 @@ void sampleSession2(){
   }
   timeTextTFT();
 }
-
 void sampleSession3(){
   if(blue == 1){
     screenSelect = 2;
@@ -357,8 +345,7 @@ void sampleSession3(){
     flickerControl = 1;
   }
   timeTextTFT();
-}
-  
+} 
 void storedMeasures(){
   if(blue == 1){
     screenSelect = 12;
@@ -415,7 +402,6 @@ void storedMeasures(){
   }
   timeTextTFT();
 }
-
 void screenTemplate(int screen){
   char title[20];
   int red = 0;

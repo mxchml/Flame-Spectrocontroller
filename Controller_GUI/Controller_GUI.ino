@@ -53,6 +53,7 @@ char backMeasurementTime[30];
 
 //Spectrum Capture Handlers
 word integrationTime = 10;
+word backgroundIntegrationTime = 100;
 word scansAccumulated = 0;
 int escapeGlobal = 0;
 word spectrum[2100];
@@ -74,7 +75,6 @@ void setup() {
   startSDCard();
   beginRTC();
   initializeScreen();
-  //changeBaud(6);
 }
 
 void loop() {
@@ -83,16 +83,23 @@ void loop() {
   greenButtonPush();
   blueButtonPush();  
   screenControl();
+  if (Serial1.available()) {
+    Serial.println(Serial1.read());
+  }
 }
 
 //Support Functions
 void initializeSerial(){
   // Open regular serial connections for RX/TX and the software serial pins
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial1.begin(9600);
-  delay(1000);
-  Serial.println();
-  Serial.println();
+  while (Serial1.available()) {
+    Serial.println("flushing the pipe");
+    Serial.println(Serial1.read());
+  }
+  changeBaud(6);
+  Serial1.begin(9600);
+
   Serial.println("The Serial Port is active");
 }
 
