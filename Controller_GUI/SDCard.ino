@@ -9,6 +9,8 @@ void startSDCard(){
   }
   root = SD.open("/");
 }
+
+//******************************************************************************************************************************************************************************************************************************
 double parseFromFile(File& file) {
     char pixelText[10];
     int i = 0;
@@ -25,6 +27,8 @@ double parseFromFile(File& file) {
     pixelText[i] = '\0';
     return atof(pixelText);
 }
+
+//******************************************************************************************************************************************************************************************************************************
 void readRawFile() {
   File file = SD.open("GH2count.TXT", FILE_READ);
   int counter = 0;
@@ -37,6 +41,8 @@ void readRawFile() {
     }
   }
 }
+
+//******************************************************************************************************************************************************************************************************************************
 void printDirectory(File dir, int numTabs) {
   while (true) {
     File entry =  dir.openNextFile();
@@ -59,6 +65,8 @@ void printDirectory(File dir, int numTabs) {
     entry.close();
   }
 }
+
+//******************************************************************************************************************************************************************************************************************************
 word parseWordFromFile(File& file) {
     char pixelText[10];
     int i = 0;
@@ -75,6 +83,8 @@ word parseWordFromFile(File& file) {
     pixelText[i] = '\0';
     return atof(pixelText);
 }
+
+//******************************************************************************************************************************************************************************************************************************
 void compress(int number) {
   if(number >= 36){
     compressor = '&';
@@ -84,6 +94,8 @@ void compress(int number) {
     compressor = replacements[number];
   }
 }
+
+//******************************************************************************************************************************************************************************************************************************
 void compressSecond(int number) {
   if (number & 0x01) {
     number = number + 1;
@@ -97,6 +109,8 @@ void compressSecond(int number) {
     compressor = replacements[number];
   }
 }
+
+//******************************************************************************************************************************************************************************************************************************
 void setFileName() {
   memset(fileName, 0, sizeof fileName);  
   DateTime dt = rtc.now();  
@@ -133,8 +147,10 @@ void setFileName() {
   fileName[11] = 't';
   sprintf(measurementTime, "%02d-%02d-%4d %02d:%02d:%02d", dt.month(), dt.day(), dt.year(), dt.hour(), dt.minute(), dt.second());
 }
-void setBackgroundFileName() {
-  memset(backFileName, 0, sizeof backFileName);  
+
+//******************************************************************************************************************************************************************************************************************************
+void createSessionDirectory() {
+  memset(directoryName, 0, sizeof directoryName);  
   DateTime dt = rtc.now();  
   char Year[5];
   itoa(dt.year(), Year, 10);
@@ -152,68 +168,114 @@ void setBackgroundFileName() {
   }
   int Second = dt.second();
   compress(Day);
-  backFileName[0] = compressor;    
+  directoryName[0] = compressor;    
   compress(Month);
-  backFileName[1] = compressor;
-  backFileName[2] = Year[2];
-  backFileName[3] = Year[3];  
+  directoryName[1] = compressor;
+  directoryName[2] = Year[2];
+  directoryName[3] = Year[3];  
   compress(Hour); 
-  backFileName[4] = compressor;
-  backFileName[5] = Minute[0];
-  backFileName[6] = Minute[1];
+  directoryName[4] = compressor;
+  directoryName[5] = Minute[0];
+  directoryName[6] = Minute[1];
   compressSecond(Second);
-  backFileName[7] = compressor;
-  backFileName[8] = '.';
-  backFileName[9] = 't';
-  backFileName[10] = 'x';
-  backFileName[11] = 't';
-  sprintf(backMeasurementTime, "M%02d-D%02d-Y%4d H%02d:M%02d:S%02d", dt.month(), dt.day(), dt.year(), dt.hour(), dt.minute(), dt.second());
+  directoryName[7] = compressor;
+  SD.mkdir(directoryName);
 }
-void spectrumAnalysis(File& file) {
-  File spectrumFile = SD.open(fileName, FILE_READ);    // get integration time from spectrum file
-  File backgroundFile = SD.open("backG.TXT", FILE_READ);
 
-  
-}
-void saveRawSpectrum() {
+//******************************************************************************************************************************************************************************************************************************
+void saveSpectrum() {
   Serial.println("Writing spectrum to file...");
   File file = SD.open(fileName, FILE_WRITE);
-  file.println(fileName);
-  file.println();
-  file.println("Integration Time: ");
-  file.println(integrationTime);
-  file.println();
-
-//((((((((((((((()))))))))))))))
-
+  file.print("Filename: ");
+  file.print(fileName);
+  file.println(",");
+  file.print("Measurement Time: ");
+  file.print(measurementTime);
+  file.println(",");
+  file.print("Integration time: ");
+  file.print(integrationTime);
+  file.println(",");
+  file.print("UV Power (W/cm2): ");
+  file.print(uvPower);
+  file.println(",");
+  file.print("Blue Power (W/cm2): ");
+  file.print(bluePower);
+  file.println(",");  
+  file.print("Green Power (W/cm2): ");
+  file.print(greenPower);
+  file.println(",");
+  file.print("Red Power (W/cm2): ");
+  file.print(redPower);
+  file.println(",");
+  file.println("(Wavelength, Raw Count, Thresholded Count, W/cm2)");
   for (int i = 0; i < dataCount; i++) {
+    file.print(wavelengths[i]);
+    file.print(",");
     file.print(spectrum[i]);
     file.print(",");
-    file.println();
+    file.print(thresholdedSpectrum[i]);
+    file.print(",");    
+    file.print(spectrumPixelPower[i]);
+    file.println(",");
   }
   file.close();
-  Serial.println("Raw spectrum measurement done.");
+  Serial.println("Spectrum saved.");
 }
-void saveSpectrum(){
+
+//******************************************************************************************************************************************************************************************************************************
+void saveSessionSpectrum() {
+  Serial.println("Writing spectrum to file...");
+  char filePath[45] = "";
+  strcat(filePath, directoryName);
+  strcat(filePath, "/");
+  strcat(filePath, fileName);
+  File file = SD.open(filePath, FILE_WRITE);
+  Serial.println(filePath);
+  file.print("Filename: ");
+  file.print(fileName);
+  file.println(",");
+  file.print("Measurement Time: ");
+  file.print(measurementTime);
+  file.println(",");
+  file.print("Integration time: ");
+  file.print(integrationTime);
+  file.println(",");
+  file.print("UV Power (W/cm2): ");
+  file.print(uvPower);
+  file.println(",");
+  file.print("Blue Power (W/cm2): ");
+  file.print(bluePower);
+  file.println(",");  
+  file.print("Green Power (W/cm2): ");
+  file.print(greenPower);
+  file.println(",");
+  file.print("Red Power (W/cm2): ");
+  file.print(redPower);
+  file.println(",");
+  file.println("(Wavelength, Count, W/cm2)");
+  for (int i = 0; i < dataCount; i++) {
+    file.print(wavelengths[i]);
+    file.print(",");
+    file.print(spectrum[i]);
+    file.print(",");
+    file.print(spectrumPixelPower[i]);
+    file.println(",");
+  }
+  file.close();
+  Serial.println("Spectrum saved.");
+}
+
+//******************************************************************************************************************************************************************************************************************************
+void saveRawSpectrum(){
     Serial.println("Writing spectrum to file...");
     setFileName();
     File file = SD.open(fileName, FILE_WRITE);
     for (int i = 0; i < dataCount; i++) {
-      file.print(spectrumPixelPower[i]);
+      file.print(wavelengths[i]);
+      file.print(",");
+      file.print(spectrum[i]);
       file.print(",");
       file.println();
-  }
-  file.close();
-  Serial.println("Raw spectrum measurement done.");
-}
-void saveBackgroundSpectrum() {
-  Serial.println("Writing background spectrum to file...");
-  setBackgroundFileName();
-  File file = SD.open(backFileName, FILE_WRITE);
-  for (int i = 0; i < dataCount; i++) {
-    file.print(backSpectrum[i]);
-    file.print(",");
-    file.println();
   }
   file.close();
   Serial.println("Raw spectrum measurement done.");

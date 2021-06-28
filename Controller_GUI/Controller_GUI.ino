@@ -48,26 +48,40 @@ int fileSelection = 5;
 char compressor;
 char fileName[13] = "";
 char backFileName[13] = "";
+char directoryName[30] = "";
 char measurementTime[30];
 char backMeasurementTime[30];
+int filePosition = 0;
 
-//Spectrum Capture Handlers
+//Spectrum Measurement Handlers
 word integrationTime = 10;
 word backgroundIntegrationTime = 100;
 word scansAccumulated = 0;
 int escapeGlobal = 0;
-word spectrum[2100];
-word backSpectrum[2100];
-double spectrumPixelPower[2100];
 int dataCount;
+word spectrum[2100];
+word thresholdedSpectrum[2100];
+double spectrumPixelPower[2100];
 double uvPower = 0;
 double bluePower = 0;
 double greenPower = 0;
 double redPower = 0;
 
-double calibrationFactor[2048];
-double wavelengthDelta[2048];
-double backGroundSpectrum[2048];
+//Session Accumulated Energy Handlers
+double uvAverage = 0;
+double blueAverage = 0;
+double greenAverage = 0;
+double redAverage = 0;
+unsigned long startTime = 0;
+unsigned long stopTime = 0;
+unsigned int sessionMeasureNumber = 0;
+unsigned long sessionDuration = stopTime - startTime;
+unsigned long uvEnergy;
+unsigned long blueEnergy;
+unsigned long greenEnergy;
+unsigned long redEnergy;
+
+
 
 void setup() {
   initializeSerial();
@@ -88,7 +102,7 @@ void loop() {
   }
 }
 
-//Support Functions
+//Basic Support Functions
 void initializeSerial(){
   // Open regular serial connections for RX/TX and the software serial pins
   Serial.begin(115200);
@@ -97,9 +111,45 @@ void initializeSerial(){
     Serial.println("flushing the pipe");
     Serial.println(Serial1.read());
   }
-  changeBaud(6);
-  Serial1.begin(9600);
-
   Serial.println("The Serial Port is active");
+}
+
+void buttonsStart(){
+  pinMode(BUTTON_GREEN, INPUT_PULLUP);
+  pinMode(BUTTON_BLUE, INPUT_PULLUP);
+  pinMode(BUTTON_RED, INPUT_PULLUP);
+  pinMode(BUTTON_YELLOW, INPUT_PULLUP);
+}
+void yellowButtonPush(){
+  int buttonValue = digitalRead(BUTTON_YELLOW);
+  if (buttonValue == LOW){
+    yellow = 1;
+    flickerControl = 0;
+    delay(200);
+  }
+}
+void redButtonPush(){
+  int buttonValue = digitalRead(BUTTON_RED);
+  if (buttonValue == LOW){
+    red = 1;
+    flickerControl = 0;
+    delay(200);
+  }
+}
+void greenButtonPush(){
+  int buttonValue = digitalRead(BUTTON_GREEN);
+  if (buttonValue == LOW){
+    green = 1;
+    flickerControl = 0;
+    delay(200);
+  }
+}
+void blueButtonPush(){
+  int buttonValue = digitalRead(BUTTON_BLUE);
+  if (buttonValue == LOW){
+    blue = 1;
+    flickerControl = 0;
+    delay(200);
+  }
 }
 
