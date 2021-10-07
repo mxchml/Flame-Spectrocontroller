@@ -45,21 +45,6 @@ void readSpectrum() {
 }
 
 //******************************************************************************************************************************************************************************************************************************
-void readBackSpectrum() {
-  Serial.println("Starting Spectrum read...");
-  send_str("S");
-  dataCount = 0;
-  readHeader();
-  word dataLine = readWord();
-  while (dataLine != 0xFFFD) {
-    backSpectrum[dataCount++] = dataLine; 
-    dataLine = readWord();
-  }
-  Serial.println("End of spectrum");
-  delay(100);
-}
-
-//******************************************************************************************************************************************************************************************************************************
 void send_str(const char* cmd) {
   Serial1.print(cmd);
   Serial1.print('\r');
@@ -125,32 +110,18 @@ void changeBaud() {
 
 //******************************************************************************************************************************************************************************************************************************
 void setIntegrationTime() {
-  integrationTime = 100;
-  sendChar16BitDataword("I",integrationTime);
-  readSpectrum();
-  double multiplier = 50000.0/static_cast<double>(maximum(spectrum));
+  if(spectrum[889] == 0){
+    sendChar16BitDataword("I",integrationTime);
+    readSpectrum();
+  }
+  double multiplier = 21363.6/static_cast<double>(maximum(spectrum));
   integrationTime = static_cast<double>(integrationTime)*multiplier;
-  if (integrationTime > 5000){
+  if (integrationTime > 5000) {
     integrationTime = 5000;
   }
-  Serial.print("Background multiplier: ");
-  Serial.println(multiplier);
   sendChar16BitDataword("I",integrationTime);
-}
-
-//******************************************************************************************************************************************************************************************************************************
-void setBackgroundIntegrationTime() {
-  backgroundIntegrationTime = 100;
-  sendChar16BitDataword("I",backgroundIntegrationTime);
-  readBackSpectrum();
-  double multiplier = 50000.0/static_cast<double>(maximum(backSpectrum));
-  backgroundIntegrationTime = static_cast<double>(backgroundIntegrationTime)*multiplier;
-  if (backgroundIntegrationTime > 5000){
-    backgroundIntegrationTime = 5000;
-  }
-  Serial.print("Multiplier: ");
-  Serial.println(multiplier);
-  sendChar16BitDataword("I",backgroundIntegrationTime);
+  Serial.print("IntegrationTime: ");
+  Serial.println(integrationTime);
 }
 
 //******************************************************************************************************************************************************************************************************************************
@@ -165,8 +136,34 @@ word maximum(word spectrum[]){
 }
 
 //******************************************************************************************************************************************************************************************************************************
-double pixelPower(double pixelNumber, double integrationTimeInSec, int i) {
-    double pixelPower = pixelNumber;
+double linearityCorrection() {
+  int i = 0;
+  for(i; i < 2048; i++) {
+    double pixelCount = static_cast<double>(spectrum[i]);
+    double factor = linearityCorrectionFactor(pixelCount);
+    pixelCount = pixelCount * factor;
+    correctedSpectrum[i] = static_cast<word>(pixelCount);
+  }
+}
+
+//******************************************************************************************************************************************************************************************************************************
+double linearityCorrectionFactor(double pixelCount) { 
+    pixelCount = pixelCount * (65535.0/28000.0);
+    double pixelCount1 = pixelCount;
+    double pixelCount2 = pixelCount * pixelCount;
+    double pixelCount3 = pixelCount * pixelCount * pixelCount;
+    double pixelCount4 = pixelCount * pixelCount * pixelCount * pixelCount;
+    double pixelCount5 = pixelCount * pixelCount * pixelCount * pixelCount * pixelCount;
+    double pixelCount6 = pixelCount * pixelCount * pixelCount * pixelCount * pixelCount * pixelCount;
+    double pixelCount7 = pixelCount * pixelCount * pixelCount * pixelCount * pixelCount * pixelCount * pixelCount;
+    double factor = 0.884115 + 1.00742e-5 * pixelCount1 + -5.39901e-10 * pixelCount2 + 2.78301e-14 * pixelCount3 + -1.10510e-18 * pixelCount4 + 2.59529e-23 * pixelCount5 + -3.05861e-28 * pixelCount6 + 1.34544e-33 * pixelCount7;
+    factor = 1.0/factor;
+    return factor;
+}
+
+//******************************************************************************************************************************************************************************************************************************
+double pixelPower(double pixelCount, double integrationTimeInSec, int i) {
+    double pixelPower = pixelCount;
     pixelPower *= calibrationFactorsHard[i];
     pixelPower /= 0.119460; 
     pixelPower /= integrationTimeInSec;
@@ -175,47 +172,64 @@ double pixelPower(double pixelNumber, double integrationTimeInSec, int i) {
 }
 
 //******************************************************************************************************************************************************************************************************************************
-void thresholdPixels() {
+void identifySignal() {
   unsigned long countSum = 0;
-  int loopExecuteCount = 0;
+  int loopExecuteCount = 107;
+  double thresholdLimit;
   int i=59;
   for(i; i < 166; i++) {
-    countSum += spectrum[i];
-    loopExecuteCount++;
+    countSum += correctedSpectrum[i];
   }
-  double thresholdLimit = static_cast<double>(countSum) / static_cast<double>(loopExecuteCount);
-  i = 0;
-  for(i; i < 2047; i++) {
-    if(abs(static_cast<double>(spectrum[i]) - thresholdLimit) > static_cast<double>(spectrum[i])/3.0) {
-      thresholdedSpectrum[i] = spectrum[i] - static_cast<word>(thresholdLimit);
+  double background = static_cast<double>(countSum) / static_cast<double>(loopExecuteCount);
+  i = 0;  
+  for(i; i < 369; i++) {
+    if(abs(static_cast<double>(correctedSpectrum[i]) - background) > background/1.5) {
+      correctedSpectrum[i] = correctedSpectrum[i] - background;
     }
     else {
-      thresholdedSpectrum[i] = 0;
+      correctedSpectrum[i] = 0;
+    }
+  }
+  for(i; i < 604; i++) {
+    if(abs(static_cast<double>(correctedSpectrum[i]) - background) > background/2.0) {
+      correctedSpectrum[i] = correctedSpectrum[i] - background;
+    }
+    else {
+      correctedSpectrum[i] = 0;
+    }
+  }
+  for(i; i < 2048; i++) {
+    if(abs(static_cast<double>(correctedSpectrum[i]) - background) > background/10.0) {
+      correctedSpectrum[i] = correctedSpectrum[i] - background;
+    }
+    else {
+      correctedSpectrum[i] = 0;
     }
   }
 }
 
+//******************************************************************************************************************************************************************************************************************************
 void calWattsfromCounts() {
   double integrationTimeInSec = static_cast<double>(integrationTime);
   integrationTimeInSec = integrationTimeInSec/1000;
   int i=59;
   for(i; i < 604; i++){
-    double pixelNumber = static_cast<double>(thresholdedSpectrum[i]);
+    double pixelNumber = static_cast<double>(correctedSpectrum[i]);
     spectrumPixelPower[i] = pixelPower(pixelNumber, integrationTimeInSec, i);
     uvPower += spectrumPixelPower[i];
   }
   for(i; i < 889; i++){
-    double pixelNumber = static_cast<double>(thresholdedSpectrum[i]);
+    double pixelNumber = static_cast<double>(correctedSpectrum[i]);
     spectrumPixelPower[i] = pixelPower(pixelNumber, integrationTimeInSec, i);
     bluePower += spectrumPixelPower[i];
   }
   for(i; i < 1183; i++){
-    double pixelNumber = static_cast<double>(thresholdedSpectrum[i]);
+    double pixelNumber = static_cast<double>(correctedSpectrum[i]);
     spectrumPixelPower[i] = pixelPower(pixelNumber, integrationTimeInSec, i);
     greenPower += spectrumPixelPower[i];
   }
   for(i; i < 1489; i++){
-    double pixelNumber = static_cast<double>(thresholdedSpectrum[i]);
+    double pixelNumber = static_cast<double>(correctedSpectrum[i]);
     spectrumPixelPower[i] = pixelPower(pixelNumber, integrationTimeInSec, i);
     redPower += spectrumPixelPower[i];
   }
@@ -247,6 +261,7 @@ void resetMeasurement() {
   memset(fileName, 0, sizeof fileName);  
   memset(measurementTime, 0, sizeof measurementTime);  
   memset(spectrum, 0, sizeof spectrum);
+  memset(correctedSpectrum, 0, sizeof correctedSpectrum);
   memset(spectrumPixelPower, 0, sizeof spectrumPixelPower);
   integrationTime = 10;
   uvPower = 0;

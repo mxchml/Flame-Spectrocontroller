@@ -207,16 +207,24 @@ void saveSpectrum() {
   file.print("Red Power (W/cm2): ");
   file.print(redPower);
   file.println(",");
-  file.println("(Wavelength, Raw Count, Thresholded Count, W/cm2)");
+  file.println("(Wavelength, Raw Count, Corrected Count, W/cm2)");
   for (int i = 0; i < dataCount; i++) {
     file.print(wavelengths[i]);
     file.print(",");
     file.print(spectrum[i]);
     file.print(",");
-    file.print(thresholdedSpectrum[i]);
+    file.print(correctedSpectrum[i]);
     file.print(",");    
-    file.print(spectrumPixelPower[i]);
+    file.print(spectrumPixelPower[i], 10);
     file.println(",");
+
+    Serial.print(wavelengths[i]);
+    Serial.print(", ");
+    Serial.print(spectrum[i]);
+    Serial.print(", ");
+    Serial.print(correctedSpectrum[i]);
+    Serial.print(", ");
+    Serial.println(spectrumPixelPower[i], 10);
   }
   file.close();
   Serial.println("Spectrum saved.");
@@ -252,14 +260,24 @@ void saveSessionSpectrum() {
   file.print("Red Power (W/cm2): ");
   file.print(redPower);
   file.println(",");
-  file.println("(Wavelength, Count, W/cm2)");
+  file.println("(Wavelength, Raw Count, Corrected Count, W/cm2)");
   for (int i = 0; i < dataCount; i++) {
     file.print(wavelengths[i]);
     file.print(",");
     file.print(spectrum[i]);
     file.print(",");
+    file.print(correctedSpectrum[i]);
+    file.print(",");
     file.print(spectrumPixelPower[i]);
     file.println(",");
+
+    Serial.print(wavelengths[i]);
+    Serial.print(", ");
+    Serial.print(spectrum[i]);
+    Serial.print(", ");
+    Serial.print(correctedSpectrum[i]);
+    Serial.print(", ");
+    Serial.println(spectrumPixelPower[i]);
   }
   file.close();
   Serial.println("Spectrum saved.");

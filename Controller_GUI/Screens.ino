@@ -84,8 +84,8 @@ void mainMenu(){
       myTFT.rect(3,82,74,41);
       myTFT.rect(3,35,74,41);
       myTFT.stroke(255,255,255);  //text
-      myTFT.text("Take Back",14,45);
-      myTFT.text("Spectrum",14,55);
+      myTFT.text("Place",14,45);
+      myTFT.text("Holder",14,55);
       myTFT.text("Take Single",87,45);
       myTFT.text("Measure",100,55);
       myTFT.text("Begin",14,93);
@@ -99,7 +99,7 @@ void mainMenu(){
 //******************************************************************************************************************************************************************************************************************************
 void singleMeasure1(){
   if(blue == 1){
-    screenSelect = 3;
+    screenSelect = 2;
     blue = 0;
   }
   else if(green == 1){
@@ -119,7 +119,7 @@ void singleMeasure1(){
     myTFT.text(backFileName, 5, 47);
     myTFT.text("Taken on: ", 5, 67);
     myTFT.text(backMeasurementTime, 5, 77);
-    myTFT.text("> Push BLUE for new DS", 4, 105);
+    myTFT.text("> Push BLUE for Main Menu", 4, 105);
     myTFT.text("> Push GREEN to measure", 4, 115);
     flickerControl = 1;
   }
@@ -149,6 +149,8 @@ void singleMeasure2(){
     setFileName();
     setIntegrationTime();
     readSpectrum();
+    linearityCorrection();
+    identifySignal();
     calWattsfromCounts();
     saveSpectrum();
     exitCondition = 1; 
@@ -181,15 +183,15 @@ void singleMeasure3(){
 
 //******************************************************************************************************************************************************************************************************************************
 void sampleSession1(){
-  if(blue == 1){
-    screenSelect = 3;
-    blue = 0;
-  }
-  else if(yellow == 1){
+  if(yellow == 1){
     screenSelect = 10;
     startTime = millis();
     createSessionDirectory();
     yellow = 0;
+  }
+  else if(blue == 1){
+    screenSelect = 2;
+    blue = 0;
   }
   else if(green == 1 | red == 1){
     red = 0;
@@ -204,7 +206,7 @@ void sampleSession1(){
     myTFT.text(backFileName, 5, 47);
     myTFT.text("Taken on: ", 5, 57);
     myTFT.text(backMeasurementTime, 5, 67);
-    myTFT.text("> Push BLUE for new DS", 4, 105);
+    myTFT.text("> Push BLUE for M Menu", 4, 105);
     myTFT.text("> Push YELLOW to start", 4, 115);
     flickerControl = 1;
   }
@@ -235,6 +237,8 @@ void sampleSession2(){
     setFileName();
     setIntegrationTime();
     readSpectrum();
+    linearityCorrection();
+    identifySignal();
     calWattsfromCounts();
     saveSessionSpectrum();
     calAverageWatts();
@@ -251,6 +255,7 @@ void sampleSession3(){
     yellow = 0;
     resetMeasurement();
     resetSession();
+
   }
 
   else if(flickerControl == 0){

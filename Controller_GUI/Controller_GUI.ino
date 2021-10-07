@@ -54,13 +54,13 @@ char backMeasurementTime[30];
 int filePosition = 0;
 
 //Spectrum Measurement Handlers
-word integrationTime = 10;
+word integrationTime = 100;
 word backgroundIntegrationTime = 100;
 word scansAccumulated = 0;
 int escapeGlobal = 0;
 int dataCount;
 word spectrum[2100];
-word thresholdedSpectrum[2100];
+word correctedSpectrum[2100];
 double spectrumPixelPower[2100];
 double uvPower = 0;
 double bluePower = 0;
@@ -120,6 +120,7 @@ void buttonsStart(){
   pinMode(BUTTON_RED, INPUT_PULLUP);
   pinMode(BUTTON_YELLOW, INPUT_PULLUP);
 }
+
 void yellowButtonPush(){
   int buttonValue = digitalRead(BUTTON_YELLOW);
   if (buttonValue == LOW){
@@ -128,6 +129,7 @@ void yellowButtonPush(){
     delay(200);
   }
 }
+
 void redButtonPush(){
   int buttonValue = digitalRead(BUTTON_RED);
   if (buttonValue == LOW){
@@ -136,6 +138,7 @@ void redButtonPush(){
     delay(200);
   }
 }
+
 void greenButtonPush(){
   int buttonValue = digitalRead(BUTTON_GREEN);
   if (buttonValue == LOW){
@@ -144,6 +147,7 @@ void greenButtonPush(){
     delay(200);
   }
 }
+
 void blueButtonPush(){
   int buttonValue = digitalRead(BUTTON_BLUE);
   if (buttonValue == LOW){
