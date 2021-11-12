@@ -275,6 +275,7 @@ void storedData(){
       green_button = 0;
       screen_select = 12;
   }
+  
   else if(blue_button == 1){
     if (countSDFolders() != 0){
       file_selection--;
@@ -289,10 +290,12 @@ void storedData(){
     blue_button = 0;
     screen_select = 12;
   }
+  
   else if(yellow_button == 1){
     screen_select = 2;
     yellow_button = 0;
   }
+  
   else if(flicker_control == 0){
     char output_char[20];
     screenTemplate(4);

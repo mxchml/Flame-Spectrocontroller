@@ -47,6 +47,9 @@ int countSDFolders(){
   cursor.close();
   root.close();
 
+  Serial.println("file counter");
+  Serial.println(file_counter);
+
   return file_counter;
 }
 

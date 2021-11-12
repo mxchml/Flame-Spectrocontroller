@@ -14,8 +14,7 @@ void checkSpectrometerConnection() {
     myTFT.text("Spectroradiometer",14,45);
     myTFT.text("connection failure", 14, 55);
 
-    int stopFlag = 1;
-    while(stopFlag);
+    exit(5);
   }
 
 }

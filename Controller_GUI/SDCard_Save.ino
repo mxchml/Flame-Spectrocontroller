@@ -18,15 +18,18 @@ void createSessionFolder(){
   sd.mkdir(file_path);
   
   strcpy(session_folder, file_path);
+  Serial.println("session_folder");
+  Serial.println(session_folder);
 }
 
 void saveMeasurementAsText() {
   Serial.println("Writing spectrum to file...");
 
   memset(file_path, 0, sizeof file_path);  
+  strcat(file_path, "m");
   strcat(file_path, file_name);
   strcat(file_path, "/");
-  strcat(file_path, file_name);
+  strcat(file_path, "measurement");
   strcat(file_path, ".txt");
 
   Serial.println(file_path);
@@ -72,9 +75,10 @@ void saveMeasurementAsBinary() {
   Serial.println("Writing spectrum binary to file...");
 
   memset(file_path, 0, sizeof file_path);  
+  strcat(file_path, "m");
   strcat(file_path, file_name);
   strcat(file_path, "/");
-  strcat(file_path, file_name);
+  strcat(file_path, "binary");
   strcat(file_path, ".dat");
 
   Serial.println(file_path);

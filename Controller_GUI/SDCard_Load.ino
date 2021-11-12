@@ -66,22 +66,13 @@ void loadFromFile(int fileSelect){
 
   folder.getName(file_name, 256);
   Serial.println(file_name);
-  file_size = folder.fileSize();
 
-  if (file_size == 0){
-    myTFT.setTextSize(1);
-    myTFT.stroke(255,255,255);
-
-    myTFT.text("EMPTY FILE:", 5, 47);
-    myTFT.text("NAME:", 5, 57);
-    myTFT.text(file_name, 5, 67);
-  }
-
-  else if (file_name[0] == 'm'){
+  if (file_name[0] == 'm'){
     memset(file_path, 0, sizeof file_path);
     strcat(file_path, file_name);
     strcat(file_path, "/");
-    strcat(file_path, file_name);
+
+    strcat(file_path, "binary");
     strcat(file_path, ".dat");
 
     Serial.println(file_path);

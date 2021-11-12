@@ -35,7 +35,7 @@ char time_stamp[] = "DDD_ DD MMM YYYY hh_mm_ss";
 char now_time[20];
 
 //Screen
-TFT myTFT = TFT(CS_PIN, DC_PIN, 3);
+TFT myTFT = TFT(CS_PIN, DC_PIN, PWM_PIN);
 
 //SD Card
 SdFat sd;
