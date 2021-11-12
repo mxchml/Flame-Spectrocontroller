@@ -53,14 +53,17 @@ void mainMenu(){
       screen_select = 6;
       green_button = 0;
     }
+    
     else if(yellow_button == 1){
       screen_select = 9;
       yellow_button = 0;
     }
+    
     else if(blue_button == 1){
       screen_select = 12;
       blue_button = 0;
     }
+    
     else if(flicker_control == 0){
       screenTemplate(0);
       
@@ -81,13 +84,14 @@ void mainMenu(){
       myTFT.text("Data",100,55);
       
       myTFT.fill(255,255,0);      //yellow
-      myTFT.rect(0,79,159,47);
+      myTFT.rect(0,79,158,47);
       myTFT.fill(0,0,0);
       myTFT.rect(3,82,155,41);
       myTFT.stroke(255,255,255); 
       myTFT.text("Begin Session",43,98);
 
       flicker_control = 1;
+      timeTextTFT();
     }
 }
 
@@ -95,7 +99,7 @@ void singleMeasure1(){
   if(blue_button == 1){
     screen_select = 2;
     blue_button = 0;
-  }
+  }  
   else if(green_button == 1){
     screen_select = 7;
     green_button = 0;
@@ -235,23 +239,26 @@ void sampleSession2(){
     myTFT.text("> HOLD YELLOW to stop", 5, 115);
     setFileName();
     setIntegrationTime();
+    
     readSpectrum();
     linearityCorrection();
-    identifySignal();
+    //identifySignal();
+    identifySignalElectricDark();
     calWattsfromCounts();
     saveSessionSpectrum();
     calAverageWatts();
+    
     delay(500);
   }
   timeTextTFT();
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void sampleSession3(){
   if(blue_button == 1){
     screen_select = 2;
     blue_button = 0;
     yellow_button = 0;
+    
     resetMeasurement();
     resetSession();
   }
@@ -262,6 +269,7 @@ void sampleSession3(){
 
     generateSessionBinarySummary();
     generateSessionTextSummary();
+    
     outputSession();
     
     flicker_control = 1;
@@ -275,7 +283,6 @@ void sampleSession3(){
   timeTextTFT();
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void storedData(){
   if(green_button == 1){
     if (countSDFolders() != 0){
@@ -307,12 +314,12 @@ void storedData(){
     screen_select = 12;
   }
   
-  else if(yellow_button == 1){
+  else if (yellow_button == 1){
     screen_select = 2;
     yellow_button = 0;
   }
   
-  else if(flicker_control == 0){
+  else if (flicker_control == 0){
     char output_char[20];
     screenTemplate(4);
     myTFT.setTextSize(1);
@@ -387,7 +394,6 @@ void screenTemplate(int screen){
   timeTextTFT();
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void outputMeasurement() {    
     char output_char[20];
     
@@ -422,7 +428,6 @@ void outputMeasurement() {
     Serial.println(output_char);
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void outputSession() {
     char output_char[20];
     myTFT.setTextSize(1);
@@ -457,7 +462,6 @@ void outputSession() {
     Serial.println(output_char);
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void timeTextTFT(){
   DateTime dt = rtc.now();
   
@@ -514,7 +518,6 @@ void timeTextTFT(){
     myTFT.fill(0,0,0);
     myTFT.rect(120,20,40,10);
   }
-
   myTFT.stroke(255,255,255);
   myTFT.text(now_time,120,20);
   myTFT.setTextSize(text_size);

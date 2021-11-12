@@ -28,26 +28,27 @@ void setFileName() {
 
 int countSDFolders(){
   int file_counter = 0;
-  
-  SdFile root;
-  SdFile cursor;
+  uint64_t file_size = 0;
+
+  File root;
+  File cursor;
+  File content_check;
 
   root.open("/");
-  cursor.openNext(&root);
+  cursor = root.openNextFile();
+  content_check = cursor.openNextFile();
 
   while (cursor){
-    file_counter++;
-    cursor.openNext(&root);
+    if (content_check){
+      file_counter++;
+    }
+    cursor = root.openNextFile();
+    content_check = cursor.openNextFile();
   }
-  
-  Serial.print("Number of Files: ");
-  Serial.println(file_counter);
 
+  content_check.close();
   cursor.close();
   root.close();
-
-  Serial.println("file counter");
-  Serial.println(file_counter);
 
   return file_counter;
 }

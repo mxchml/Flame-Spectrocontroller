@@ -19,20 +19,27 @@ word parseWordFromFile(File& file) {
 
 void loadFromFile(int fileSelect){
   
-  File root = sd.open("/");
+  File root;
   File folder;
   File data_file;
+  
   int file_size;
   byte byte_buf[4];
 
   memset(file_name, 0, sizeof file_name);
-  
   resetPowers();
-  root.rewindDirectory();
 
-  for (int i = 0; i <= fileSelect; i++){
+  root.open("/");
+
+  int i = 0;
+  while (i < fileSelect){
     folder = root.openNextFile();
+    data_file = folder.openNextFile();
+    if (data_file){
+      i++;
+    }
   }
+  data_file.close();
 
   folder.getName(file_name, 256);
   Serial.println(file_name);
@@ -81,7 +88,6 @@ void loadFromFile(int fileSelect){
 
     outputMeasurement();
   }
-
   else if (file_name[0] == 's'){ 
     memset(file_path, 0, sizeof file_path);
     strcat(file_path, file_name);
@@ -108,12 +114,11 @@ void loadFromFile(int fileSelect){
 
     outputSession();
   }
-
   else {
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
 
-    myTFT.text("IMPROPER FILE:", 5, 47);
+    myTFT.text("FAT32 VOLUME:", 5, 47);
     myTFT.text("NAME:", 5, 57);
     myTFT.text(file_name, 5, 67);
   }
