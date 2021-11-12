@@ -39,12 +39,14 @@ void saveMeasurementAsText() {
   file.print("file_name: ");
   file.print(file_name);
   file.println(",");
+  
   file.print("Measurement Time: ");
   file.print(measurement_time);
   file.println(",");
   file.print("Integration time: ");
   file.print(integration_time);
   file.println(",");
+  
   file.print("UV Power (W/cm2): ");
   file.print(uv_power);
   file.println(",");
@@ -57,7 +59,9 @@ void saveMeasurementAsText() {
   file.print("Red Power (W/cm2): ");
   file.print(red_power);
   file.println(",");
+  
   file.println("(Wavelength, Raw Count, Corrected Count, W/cm2)");
+  
   for (int i = 0; i < data_count; i++) {
     file.print(wavelengths[i]);
     file.print(",");
@@ -162,12 +166,14 @@ void saveSessionSpectrum() {
   file.print("file_name: ");
   file.print(file_name);
   file.println(",");
+  
   file.print("Measurement Time: ");
   file.print(measurement_time);
   file.println(",");
   file.print("Integration time: ");
   file.print(integration_time);
   file.println(",");
+  
   file.print("UV Power (W/cm2): ");
   file.print(uv_power);
   file.println(",");
@@ -180,7 +186,9 @@ void saveSessionSpectrum() {
   file.print("Red Power (W/cm2): ");
   file.print(red_power);
   file.println(",");
+  
   file.println("(Wavelength, Raw Count, Corrected Count, W/cm2)");
+  
   for (int i = 0; i < data_count; i++) {
     file.print(wavelengths[i]);
     file.print(",");

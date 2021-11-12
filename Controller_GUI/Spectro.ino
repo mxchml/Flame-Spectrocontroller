@@ -16,13 +16,13 @@ void checkSpectrometerConnection() {
 
     exit(5);
   }
-
 }
 
 void readHeader() {
   word header = readWord();
   unsigned long escape_start = millis();
   unsigned long escape_now;
+  
   while (header != 0xFFFF) {
     header = readWord();
     
@@ -84,6 +84,7 @@ void send_str(const char* cmd) {
 void sendChar16BitDataword(const char* cmd, word data_word) {
   byte LSB = data_word & 0xFF;
   byte MSB = data_word >> 8;
+  
   Serial1.print(cmd);
   Serial1.write(MSB);
   Serial1.write(LSB);
@@ -153,19 +154,25 @@ void setIntegrationTime() {
     sendChar16BitDataword("I",integration_time);
     readSpectrum();
   }
+  
   double multiplier = 21363.6/static_cast<double>(maximum(spectrum));
   integration_time = static_cast<double>(integration_time)*multiplier;
+  
   if (integration_time > 5000) {
     integration_time = 5000;
   }
+  
   sendChar16BitDataword("I",integration_time);
+  
   Serial.print("IntegrationTime: ");
   Serial.println(integration_time);
 }
 
 word maximum(word spectrum[]){
   word max_value = 0;
+  
   for (int i = 0; i < data_count; i++) {
+    
     if(spectrum[i] > max_value){
       max_value = spectrum[i];
     }
@@ -176,10 +183,9 @@ word maximum(word spectrum[]){
 double linearityCorrection() {
   int i = 0;
   for(i; i < 2048; i++) {
-    double pixel_count = static_cast<double>(spectrum[i]);
+    double pixel_count = static_cast<double>(spectrum[i]);  
     pixel_count = (65535.0 / 28000.0) * pixel_count;
     double factor = linearityCorrectionFactor(pixel_count);
-    //double factor = 1;
     pixel_count = pixel_count * factor;
     corrected_spectrum[i] = static_cast<word>(pixel_count);
     if (i % 500 == 0) {

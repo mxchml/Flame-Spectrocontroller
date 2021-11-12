@@ -1,22 +1,27 @@
 void calWattsfromCounts() {
   double integration_time_in_sec = static_cast<double>(integration_time);
   integration_time_in_sec = integration_time_in_sec/1000;
+  
   int i=59;
+  
   for(i; i < 604; i++){
     double pixel_number = static_cast<double>(corrected_spectrum[i]);
     pixel_power[i] = computePixelPower(pixel_number, integration_time_in_sec, i);
     uv_power += pixel_power[i];
   }
+  
   for(i; i < 889; i++){
     double pixel_number = static_cast<double>(corrected_spectrum[i]);
     pixel_power[i] = computePixelPower(pixel_number, integration_time_in_sec, i);
     blue_power += pixel_power[i];
   }
+  
   for(i; i < 1183; i++){
     double pixel_number = static_cast<double>(corrected_spectrum[i]);
     pixel_power[i] = computePixelPower(pixel_number, integration_time_in_sec, i);
     green_power += pixel_power[i];
   }
+  
   for(i; i < 1489; i++){
     double pixel_number = static_cast<double>(corrected_spectrum[i]);
     pixel_power[i] = computePixelPower(pixel_number, integration_time_in_sec, i);
@@ -36,10 +41,12 @@ void resetSession() {
   blue_average = 0;
   green_average = 0;
   red_average = 0;
+  
   uv_energy = 0;
   blue_energy = 0;
   green_energy = 0;
   red_energy = 0;
+  
   session_measurement_count = 0;
   memset(file_name, 0, sizeof file_name);
 }
@@ -50,6 +57,7 @@ void resetMeasurement() {
   memset(spectrum, 0, sizeof spectrum);
   memset(corrected_spectrum, 0, sizeof corrected_spectrum);
   memset(pixel_power, 0, sizeof pixel_power);
+  
   integration_time = 10;
   uv_power = 0;
   blue_power = 0;
@@ -62,6 +70,7 @@ void identifySignal() {
   int loop_execution_count = 107;
   double threshold_limit;
   int i=59;
+  
   for(i; i < 166; i++) {
     count_sum += corrected_spectrum[i];
   }
@@ -70,17 +79,21 @@ void identifySignal() {
 
   i = 0;
   for(i; i < 369; i++) {
+    
     if(abs(static_cast<double>(corrected_spectrum[i]) - background) > background/1.5) {
       corrected_spectrum[i] = corrected_spectrum[i] - background;
     }
+    
     else {
       corrected_spectrum[i] = 0;
     }
   }
+  
   for(i; i < 604; i++) {
     if(abs(static_cast<double>(corrected_spectrum[i]) - background) > background/2.0) {
       corrected_spectrum[i] = corrected_spectrum[i] - background;
     }
+    
     else {
       corrected_spectrum[i] = 0;
     }
@@ -89,6 +102,7 @@ void identifySignal() {
     if(abs(static_cast<double>(corrected_spectrum[i]) - background) > background/10.0) {
       corrected_spectrum[i] = corrected_spectrum[i] - background;
     }
+    
     else {
       corrected_spectrum[i] = 0;
     }
@@ -100,6 +114,7 @@ void identifySignalElectricDark() {
   int loop_execution_count = 18;
   double threshold_limit;
   int i = 3;
+  
   for(i; i < 21; i++) {
     count_sum += corrected_spectrum[i];
   }
@@ -108,17 +123,17 @@ void identifySignalElectricDark() {
 
   i = 0;  
     for(i; i < 369; i++) {
-    if(abs(static_cast<double>(corrected_spectrum[i]) - background) > background/1.5) {
-      corrected_spectrum[i] = corrected_spectrum[i] - background;
-    }
-    else {
-      corrected_spectrum[i] = 0;
-    }
+      if(abs(static_cast<double>(corrected_spectrum[i]) - background) > background/1.5) {
+        corrected_spectrum[i] = corrected_spectrum[i] - background;
+      }
+      else {
+        corrected_spectrum[i] = 0;
+      }
   }
   for(i; i < 604; i++) {
     if(abs(static_cast<double>(corrected_spectrum[i]) - background) > background/2.0) {
       corrected_spectrum[i] = corrected_spectrum[i] - background;
-    }
+    } 
     else {
       corrected_spectrum[i] = 0;
     }
@@ -147,12 +162,14 @@ void calAverageWatts() {
   blue_average = (blue_average * session_measurement_count + blue_power) / (session_measurement_count+1);
   green_average = (green_average * session_measurement_count + green_power) / (session_measurement_count+1);
   red_average = (red_average * session_measurement_count + red_power) / (session_measurement_count+1);
+  
   session_measurement_count++;
 }
 
 void calSessionEnergy() {
   session_duration = stop_time - start_time;
   session_duration = session_duration/1000.0;
+  
   uv_energy = session_duration * uv_average;
   blue_energy = session_duration * blue_average;
   green_energy = session_duration * green_average;

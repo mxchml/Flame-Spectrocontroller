@@ -1,9 +1,7 @@
-//******************************************************************************************************************************************************************************************************************************
 void initializeScreen(){
     myTFT.begin();
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void screenControl(){
   switch(screen_select){
     case 1: introScreen();
@@ -27,7 +25,6 @@ void screenControl(){
   }
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void introScreen(){
   myTFT.background(0,0,0);
   myTFT.fill(255,255,255);
@@ -46,11 +43,11 @@ void introScreen(){
   myTFT.triangle(92,116,113,84,122,116);
   myTFT.triangle(122,116,113,84,144,33);
   myTFT.triangle(113,84,127,33,144,33);
+  
   delay(1);
   screen_select = 2;
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void mainMenu(){
     if(green_button == 1){
       screen_select = 6;
@@ -66,6 +63,7 @@ void mainMenu(){
     }
     else if(flicker_control == 0){
       screenTemplate(0);
+      
       myTFT.fill(0,255,0);        //green
       myTFT.rect(0,32,80,47);
       myTFT.fill(0,0,0);          
@@ -93,7 +91,6 @@ void mainMenu(){
     }
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void singleMeasure1(){
   if(blue_button == 1){
     screen_select = 2;
@@ -109,17 +106,17 @@ void singleMeasure1(){
   }
   else if(flicker_control == 0){
     screenTemplate(2);
+    
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
-    myTFT.text("Taken on: ", 5, 67);
-    myTFT.text("> Push BLUE for Main Menu", 4, 105);
-    myTFT.text("> Push GREEN to measure", 4, 115);
+    myTFT.text("> Push GREEN to measure", 4, 105);
+    myTFT.text("> Push BLUE for Main Menu", 4, 115);
+
     flicker_control = 1;
   }
   timeTextTFT();
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void singleMeasure2(){
   if(exit_condition == 1){
     screen_select = 8;
@@ -130,14 +127,17 @@ void singleMeasure2(){
     blue_button = 0;
     green_button = 0;
     yellow_button = 0;
+    
     flicker_control = 1;
   }
   else if(flicker_control == 0){
     screenTemplate(2);
+    
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
     myTFT.text("Keep inlet fixed",5,37);
     myTFT.text("Taking measurement...", 5, 47);
+    
     setFileName();
     setIntegrationTime();
     readSpectrum();
@@ -145,16 +145,17 @@ void singleMeasure2(){
     //identifySignal();
     identifySignalElectricDark();
     calWattsfromCounts();
+    
     createMeasurementDirectory();
     saveMeasurementAsText();
     saveMeasurementAsBinary();
+    
     exit_condition = 1; 
     flicker_control = 1;
   }
   timeTextTFT();
 }
 
-//******************************************************************************************************************************************************************************************************************************
 void singleMeasure3(){
   if(blue_button == 1){
     screen_select = 2;
@@ -167,9 +168,11 @@ void singleMeasure3(){
   }
   else if(flicker_control == 0){
     flicker_control = 1;
+    
     screenTemplate(2);
-    outputMeasurement();  
     myTFT.text("> Push BLUE for main menu", 4, 115);
+
+    outputMeasurement();  
     resetMeasurement();
   }
   timeTextTFT();
@@ -179,9 +182,10 @@ void singleMeasure3(){
 void sampleSession1(){
   if(yellow_button == 1){
     screen_select = 10;
+    yellow_button = 0;
+
     start_time = millis();
     createSessionFolder();
-    yellow_button = 0;
   }
   else if(blue_button == 1){
     screen_select = 2;
@@ -193,10 +197,12 @@ void sampleSession1(){
   }
   else if(flicker_control == 0){
     screenTemplate(3);
+    
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
     myTFT.text("> Push BLUE for M Menu", 4, 105);
     myTFT.text("> Push YELLOW to start", 4, 115);
+    
     flicker_control = 1;
   }
   timeTextTFT();
@@ -206,9 +212,10 @@ void sampleSession1(){
 void sampleSession2(){
   if(yellow_button == 1){
     screen_select = 11;
+    yellow_button = 0;
+    
     stop_time = millis();
     calSessionEnergy();
-    yellow_button = 0;
   }
   else if(green_button == 1 | blue_button == 1){
     blue_button = 0;
@@ -217,11 +224,14 @@ void sampleSession2(){
   }
   else if(flicker_control == 0){
     screenTemplate(3);
+    
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
     myTFT.text("Sample session active",5,37);
+    
     outputMeasurement();
     resetPowers();
+    
     myTFT.text("> HOLD YELLOW to stop", 5, 115);
     setFileName();
     setIntegrationTime();
@@ -245,14 +255,18 @@ void sampleSession3(){
     resetMeasurement();
     resetSession();
   }
+
   else if(flicker_control == 0){
     screenTemplate(3);
+    myTFT.text("> Push BLUE for main menu", 4, 115);
+
     generateSessionBinarySummary();
     generateSessionTextSummary();
     outputSession();
-    myTFT.text("> Push BLUE for main menu", 4, 115);
+    
     flicker_control = 1;
   }
+
   else if(green_button == 1){
     green_button = 0;
     flicker_control = 1;
@@ -333,6 +347,7 @@ void screenTemplate(int screen){
   int red = 0;
   int green = 0;
   int blue = 0;
+  
   switch(screen){
     case 0:
       strcpy(title, "Main");
@@ -356,10 +371,10 @@ void screenTemplate(int screen){
       break;
   }
   myTFT.background(0,0,0);
-  timeTextTFT();
   myTFT.stroke(255,255,255);  //text
   myTFT.setTextSize(2);
   myTFT.text(title, 5, 10);
+  
   myTFT.setTextSize(1);
   myTFT.fill(red, green, blue);
   myTFT.stroke(red, green, blue);  //text
@@ -368,11 +383,14 @@ void screenTemplate(int screen){
   myTFT.stroke(0,0,0);  //text
   myTFT.rect(3,35,154,90);
   myTFT.setTextSize(1);
+
+  timeTextTFT();
 }
 
 //******************************************************************************************************************************************************************************************************************************
 void outputMeasurement() {    
     char output_char[20];
+    
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
     myTFT.text("File ID: ", 5, 47);

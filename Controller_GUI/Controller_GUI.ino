@@ -71,12 +71,11 @@ double red_average = 0;
 unsigned long start_time = 0;
 unsigned long stop_time = 0;
 unsigned int session_measurement_count = 0;
-unsigned long session_duration = stop_time - start_time;
+unsigned long session_duration;
 unsigned long uv_energy;
 unsigned long blue_energy;
 unsigned long green_energy;
 unsigned long red_energy;
-
 
 void setup() {
   initializeSerial();
@@ -91,17 +90,20 @@ void loop() {
   yellowButtonPush();
   greenButtonPush();
   blueButtonPush();  
+  
   screenControl();
+  
   if (Serial1.available()) {
     Serial.println(Serial1.read());
   }
+
 }
 
 //Basic Support Functions
 void initializeSerial(){
-  // Open regular serial connections for RX/TX and the software serial pins
   Serial.begin(115200);
   Serial1.begin(9600);
+  
   while (Serial1.available()) {
     Serial.println("flushing the pipe");
     Serial.println(Serial1.read());
