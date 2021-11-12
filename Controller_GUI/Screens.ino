@@ -142,7 +142,8 @@ void singleMeasure2(){
     setIntegrationTime();
     readSpectrum();
     linearityCorrection();
-    identifySignal();
+    //identifySignal();
+    identifySignalElectricDark();
     calWattsfromCounts();
     createMeasurementDirectory();
     saveMeasurementAsText();
@@ -246,7 +247,8 @@ void sampleSession3(){
   }
   else if(flicker_control == 0){
     screenTemplate(3);
-    generateSessionSummary();
+    generateSessionBinarySummary();
+    generateSessionTextSummary();
     outputSession();
     myTFT.text("> Push BLUE for main menu", 4, 115);
     flicker_control = 1;

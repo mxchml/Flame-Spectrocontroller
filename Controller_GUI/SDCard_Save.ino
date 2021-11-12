@@ -110,7 +110,7 @@ void saveMeasurementAsBinary() {
   file.close(); 
 }
 
-void generateSessionSummary(){
+void generateSessionBinarySummary(){
   memset(file_path, 0, sizeof file_path);
   strcat(file_path, session_folder);
   strcat(file_path, "/");
@@ -124,7 +124,26 @@ void generateSessionSummary(){
   writeDoubleAsBytes(red_energy, file);
 
   file.close();
+}
 
+void generateSessionTextSummary(){
+  memset(file_path, 0, sizeof file_path);
+  strcat(file_path, session_folder);
+  strcat(file_path, "/");
+  strcat(file_path, "summary.txt");
+
+  File file = sd.open(file_path, FILE_WRITE);
+
+  file.print("UV Energy: ");
+  file.println(uv_energy);
+  file.print("Blue Energy: ");
+  file.println(blue_energy);
+  file.print("Green Energy: ");
+  file.println(green_energy);
+  file.print("Red Energy: ");
+  file.print(red_energy);
+
+  file.close();
 }
 
 void saveSessionSpectrum() {
