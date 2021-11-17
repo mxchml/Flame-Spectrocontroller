@@ -170,10 +170,10 @@ void calSessionEnergy() {
   session_duration = stop_time - start_time;
   session_duration = session_duration/1000.0;
   
-  uv_energy = session_duration * uv_average;
-  blue_energy = session_duration * blue_average;
-  green_energy = session_duration * green_average;
-  red_energy = session_duration * red_average;
+  uv_energy = session_duration * uv_average * 1000.0;
+  blue_energy = session_duration * blue_average * 1000.0;
+  green_energy = session_duration * green_average * 1000.0;
+  red_energy = session_duration * red_average * 1000.0;
 }
 
 void writeDoubleAsBytes(unsigned long long_data, File &this_file){

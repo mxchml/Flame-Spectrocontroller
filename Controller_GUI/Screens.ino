@@ -44,7 +44,6 @@ void introScreen(){
   myTFT.triangle(122,116,113,84,144,33);
   myTFT.triangle(113,84,127,33,144,33);
   
-  delay(1);
   screen_select = 2;
 }
 
@@ -84,7 +83,7 @@ void mainMenu(){
       myTFT.text("Data",100,55);
       
       myTFT.fill(255,255,0);      //yellow
-      myTFT.rect(0,79,158,47);
+      myTFT.rect(0,79,160,47);
       myTFT.fill(0,0,0);
       myTFT.rect(3,82,155,41);
       myTFT.stroke(255,255,255); 
@@ -137,6 +136,9 @@ void singleMeasure2(){
   else if(flicker_control == 0){
     screenTemplate(2);
     
+    checkSpectrometerConnection();
+
+
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
     myTFT.text("Keep inlet fixed",5,37);
@@ -187,6 +189,8 @@ void sampleSession1(){
   if(yellow_button == 1){
     screen_select = 10;
     yellow_button = 0;
+
+    checkSpectrometerConnection();
 
     start_time = millis();
     createSessionFolder();
@@ -436,7 +440,7 @@ void outputSession() {
     myTFT.text("S_ID:", 5, 47);
     myTFT.text(file_name, 60, 47);
 
-    myTFT.text("Session Energy (uJ/cm2)", 5,67);
+    myTFT.text("Session Energy (mJ/cm2)", 5,67);
     myTFT.text("200-400nm: ", 5, 77);
     dtostrf(uv_energy, sizeof(output_char), 2, output_char);
     myTFT.text(output_char,5,77);

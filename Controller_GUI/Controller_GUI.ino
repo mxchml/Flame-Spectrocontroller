@@ -7,20 +7,21 @@
 #include "Wire.h"
 #include "avr/dtostrf.h"
 
-#define SD_SPECTRO_CS 3
-
 //Screen
-#define PWM_PIN 8
-#define CS_PIN 5
-#define DC_PIN 6
+#define PWM_PIN 7
+#define DC_PIN 2
+#define LCDCS_PIN 3
 
 //Buttons
-#define BUTTON_GREEN 9
-#define BUTTON_BLUE 10
-#define BUTTON_YELLOW 12
+#define BUTTON_GREEN 4
+#define BUTTON_BLUE 5
+#define BUTTON_YELLOW 6
 boolean yellow_button = 0;
 boolean green_button = 0;
 boolean blue_button = 0;
+
+//
+#define SD_SPECTRO_CS 9
 
 //ScreenSelect
 int screen_select = 1;
@@ -35,7 +36,8 @@ char time_stamp[] = "DDD_ DD MMM YYYY hh_mm_ss";
 char now_time[20];
 
 //Screen
-TFT myTFT = TFT(CS_PIN, DC_PIN, PWM_PIN);
+TFT myTFT = TFT(LCDCS_PIN, DC_PIN, PWM_PIN);
+// TFT myTFT = TFT(LCDCS_PIN, DC_PIN, PWM_PIN);
 
 //SD Card
 SdFat sd;
@@ -82,8 +84,7 @@ void setup() {
   buttonsStart();
   initializeScreen();
   startSDCard();
-  beginRTC();
-  checkSpectrometerConnection();
+  beginRTC();  
 }
 
 void loop() {
