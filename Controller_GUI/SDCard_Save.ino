@@ -209,11 +209,26 @@ void appendTimeSeries() {
   memset(file_path, 0, sizeof file_path);
   strcat(file_path, session_folder);
   strcat(file_path, "/");
-  strcat(file_path, "time_series");
+  strcat(file_path, "time_series_(W/cm2)");
   strcat(file_path, ".txt");
 
   File file = sd.open(file_path, FILE_WRITE);
 
-  
+  uint64_t file_end = file.size();
+
+  file.seek(file_end);
+
+  file.print(measurement_time);
+  file.print(",");  
+  file.print(uv_power);
+  file.print(",");
+  file.print(blue_power);
+  file.print(",");
+  file.print(green_power);
+  file.print(",");
+  file.print(red_power);
+  file.println(",");
+
+  file.close();
 
 }

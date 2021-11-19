@@ -247,6 +247,8 @@ void sampleSession2(){
     //identifySignal();
     identifySignalElectricDark();
     calWattsfromCounts();
+    appendTimeSeries();
+    readRawFile();
     saveSessionSpectrum();
     calAverageWatts();
     

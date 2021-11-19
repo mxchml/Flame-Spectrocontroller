@@ -56,7 +56,7 @@ void printDirectory(File &directory) {
 }
 
 void readRawFile() {
-  File file = sd.open("GH2count.TXT", FILE_READ);
+  File file = sd.open(file_path, FILE_READ);
   int counter = 0;
   while (file.available()) {
     char c = file.read();
