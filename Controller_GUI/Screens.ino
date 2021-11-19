@@ -247,12 +247,11 @@ void sampleSession2(){
     //identifySignal();
     identifySignalElectricDark();
     calWattsfromCounts();
-    appendTimeSeries();
-    readRawFile();
     saveSessionSpectrum();
     calAverageWatts();
-    
-    delay(500);
+    appendTimeSeries();
+
+    delay(100);
   }
   timeTextTFT();
 }
