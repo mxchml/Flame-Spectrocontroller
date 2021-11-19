@@ -204,3 +204,16 @@ void saveSessionSpectrum() {
 
   Serial.println("Spectrum saved.");
 }
+
+void appendTimeSeries() {
+  memset(file_path, 0, sizeof file_path);
+  strcat(file_path, session_folder);
+  strcat(file_path, "/");
+  strcat(file_path, "time_series");
+  strcat(file_path, ".txt");
+
+  File file = sd.open(file_path, FILE_WRITE);
+
+  
+
+}

@@ -138,7 +138,6 @@ void singleMeasure2(){
     
     checkSpectrometerConnection();
 
-
     myTFT.setTextSize(1);
     myTFT.stroke(255,255,255);
     myTFT.text("Keep inlet fixed",5,37);
@@ -228,7 +227,6 @@ void sampleSession2(){
   else if(green_button == 1 | blue_button == 1){
     blue_button = 0;
     green_button = 0;
-    flicker_control = 1;
   }
   else if(flicker_control == 0){
     screenTemplate(3);
@@ -442,25 +440,25 @@ void outputSession() {
 
     myTFT.text("Session Energy (mJ/cm2)", 5,67);
     myTFT.text("200-400nm: ", 5, 77);
-    dtostrf(uv_energy, sizeof(output_char), 2, output_char);
+    dtostrf(uv_energy, sizeof(output_char), 0, output_char);
     myTFT.text(output_char,5,77);
     Serial.println(uv_energy);
     Serial.println(output_char);
     
     myTFT.text("400-500nm: ", 5, 87);
-    dtostrf(blue_energy, sizeof(output_char), 2, output_char);
+    dtostrf(blue_energy, sizeof(output_char), 0, output_char);
     myTFT.text(output_char,5,87);
     Serial.println(blue_energy);
     Serial.println(output_char);
     
     myTFT.text("500-600nm: ", 5, 97);
-    dtostrf(green_energy, sizeof(output_char), 2, output_char);
+    dtostrf(green_energy, sizeof(output_char), 0, output_char);
     myTFT.text(output_char,5,97);
     Serial.println(green_energy);
     Serial.println(output_char);
     
     myTFT.text("600-700nm: ", 5, 107);
-    dtostrf(red_energy, sizeof(output_char), 2, output_char);
+    dtostrf(red_energy, sizeof(output_char), 0, output_char);
     myTFT.text(output_char,5,107);
     Serial.println(red_energy);
     Serial.println(output_char);
