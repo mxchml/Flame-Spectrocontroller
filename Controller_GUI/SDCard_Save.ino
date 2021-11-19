@@ -205,11 +205,35 @@ void saveSessionSpectrum() {
   Serial.println("Spectrum saved.");
 }
 
+void createTimeSeries() {
+  memset(file_path, 0, sizeof file_path);
+  strcat(file_path, session_folder);
+  strcat(file_path, "/");
+  strcat(file_path, "time_series");
+  strcat(file_path, ".txt");
+
+  Serial.println("File_name");
+  Serial.println(file_path);
+
+  File file = sd.open(file_path, FILE_WRITE);
+  
+  unsigned long file_end = file.size();
+
+  Serial.println("FILESIZE: ");
+  Serial.println(file_end);
+
+  file.seek(file_end);
+
+  file.println("Measurement time, Integration time (ms), UV (W/cm2), Blue (W/cm2), Green (W/cm2), Red (W/cm2)");
+
+  file.close();
+}
+
 void appendTimeSeries() {
   memset(file_path, 0, sizeof file_path);
   strcat(file_path, session_folder);
   strcat(file_path, "/");
-  strcat(file_path, "timeseries_mt_ms_uvWcm2_bWcm2_gWcm2_rWcm2");
+  strcat(file_path, "time_series");
   strcat(file_path, ".txt");
 
   Serial.println("File_name");

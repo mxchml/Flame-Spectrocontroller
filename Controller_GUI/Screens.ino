@@ -193,6 +193,8 @@ void sampleSession1(){
 
     start_time = millis();
     createSessionFolder();
+
+    createTimeSeries();
   }
   else if(blue_button == 1){
     screen_select = 2;
