@@ -2048,7 +2048,7 @@ const double wavelengths[] = {178.1713,
 870.99843
 };
 
-const double calibrationFactorsHard[] = {0,
+const double calibration_factors_hard[] = {0,
 0,
 0,
 0,
@@ -4098,7 +4098,7 @@ const double calibrationFactorsHard[] = {0,
 0.00010838241
 };
 
-const double wavelengthDeltaHard[] = {0.377,
+const double wavelength_delta_hard[] = {0.377,
 0.37694,
 0.37691,
 0.37689,

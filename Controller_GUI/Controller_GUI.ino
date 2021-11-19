@@ -1,5 +1,5 @@
 #include "RTClib.h"
-#include "SD.h"
+#include "SdFat.h"
 #include "SPI.h"
 #include "string.h"
 #include "TFT.h"
@@ -7,106 +7,104 @@
 #include "Wire.h"
 #include "avr/dtostrf.h"
 
-#define SD_SPECTRO_CS 3
-
 //Screen
-#define PWM_PIN 8
-#define CS_PIN 5
-#define DC_PIN 6
+#define PWM_PIN 7
+#define DC_PIN 2
+#define LCDCS_PIN 3
 
 //Buttons
-#define BUTTON_GREEN 9
-#define BUTTON_BLUE 10
-#define BUTTON_RED 11
-#define BUTTON_YELLOW 12
-boolean yellow = 0;
-boolean red = 0;
-boolean green = 0;
-boolean blue = 0;
+#define BUTTON_GREEN 4
+#define BUTTON_BLUE 5
+#define BUTTON_YELLOW 6
+boolean yellow_button = 0;
+boolean green_button = 0;
+boolean blue_button = 0;
+
+//
+#define SD_SPECTRO_CS 9
 
 //ScreenSelect
-int screenSelect = 1;
-boolean flickerControl = 0;
-int textSize = 1;
-int exitCondition = 0;
+int screen_select = 1;
+boolean flicker_control = 0;
+int text_size = 1;
+int exit_condition = 0;
 
 //Clock
 RTC_DS3231 rtc;
-char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-char timeStamp[] = "DDD_ DD MMM YYYY hh_mm_ss";
-char TIME[20];
+char days_of_the_week[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+char time_stamp[] = "DDD_ DD MMM YYYY hh_mm_ss";
+char now_time[20];
 
 //Screen
-TFT myTFT = TFT(CS_PIN, DC_PIN, 3);
+TFT myTFT = TFT(LCDCS_PIN, DC_PIN, PWM_PIN);
+// TFT myTFT = TFT(LCDCS_PIN, DC_PIN, PWM_PIN);
+
+//SD Card
+SdFat sd;
 
 //File Handler
-File root;
-int fileCounter = 0;
-int fileSelection = 5;
+int file_selection = 0;
 
 //Data Handlers
 char compressor;
-char fileName[13] = "";
-char backFileName[13] = "";
-char directoryName[30] = "";
-char measurementTime[30];
-char backMeasurementTime[30];
-int filePosition = 0;
+char file_name[40] = "";
+char file_path[256] = "";
+char session_folder[40] = "";
+char measurement_time[30];
 
 //Spectrum Measurement Handlers
-word integrationTime = 100;
-word backgroundIntegrationTime = 100;
-word scansAccumulated = 0;
-int escapeGlobal = 0;
-int dataCount;
+word integration_time = 100;
+word scans_accumulated = 0;
+int escape_global = 0;
+int data_count;
 word spectrum[2100];
-word correctedSpectrum[2100];
-double spectrumPixelPower[2100];
-double uvPower = 0;
-double bluePower = 0;
-double greenPower = 0;
-double redPower = 0;
+word corrected_spectrum[2100];
+double pixel_power[2100];
+double uv_power = 0;
+double blue_power = 0;
+double green_power = 0;
+double red_power = 0;
 
 //Session Accumulated Energy Handlers
-double uvAverage = 0;
-double blueAverage = 0;
-double greenAverage = 0;
-double redAverage = 0;
-unsigned long startTime = 0;
-unsigned long stopTime = 0;
-unsigned int sessionMeasureNumber = 0;
-unsigned long sessionDuration = stopTime - startTime;
-unsigned long uvEnergy;
-unsigned long blueEnergy;
-unsigned long greenEnergy;
-unsigned long redEnergy;
-
-
+double uv_average = 0;
+double blue_average = 0;
+double green_average = 0;
+double red_average = 0;
+unsigned long start_time = 0;
+unsigned long stop_time = 0;
+unsigned int session_measurement_count = 0;
+unsigned long session_duration;
+unsigned long uv_energy;
+unsigned long blue_energy;
+unsigned long green_energy;
+unsigned long red_energy;
 
 void setup() {
   initializeSerial();
   buttonsStart();
-  startSDCard();
-  beginRTC();
   initializeScreen();
+  startSDCard();
+  beginRTC();  
 }
 
 void loop() {
   yellowButtonPush();
-  redButtonPush();
   greenButtonPush();
   blueButtonPush();  
+  
   screenControl();
+  
   if (Serial1.available()) {
     Serial.println(Serial1.read());
   }
+
 }
 
 //Basic Support Functions
 void initializeSerial(){
-  // Open regular serial connections for RX/TX and the software serial pins
   Serial.begin(115200);
   Serial1.begin(9600);
+  
   while (Serial1.available()) {
     Serial.println("flushing the pipe");
     Serial.println(Serial1.read());
@@ -117,42 +115,32 @@ void initializeSerial(){
 void buttonsStart(){
   pinMode(BUTTON_GREEN, INPUT_PULLUP);
   pinMode(BUTTON_BLUE, INPUT_PULLUP);
-  pinMode(BUTTON_RED, INPUT_PULLUP);
   pinMode(BUTTON_YELLOW, INPUT_PULLUP);
 }
 
 void yellowButtonPush(){
-  int buttonValue = digitalRead(BUTTON_YELLOW);
-  if (buttonValue == LOW){
-    yellow = 1;
-    flickerControl = 0;
-    delay(200);
-  }
-}
-
-void redButtonPush(){
-  int buttonValue = digitalRead(BUTTON_RED);
-  if (buttonValue == LOW){
-    red = 1;
-    flickerControl = 0;
+  int button_value = digitalRead(BUTTON_YELLOW);
+  if (button_value == LOW){
+    yellow_button = 1;
+    flicker_control = 0;
     delay(200);
   }
 }
 
 void greenButtonPush(){
-  int buttonValue = digitalRead(BUTTON_GREEN);
-  if (buttonValue == LOW){
-    green = 1;
-    flickerControl = 0;
+  int button_value = digitalRead(BUTTON_GREEN);
+  if (button_value == LOW){
+    green_button = 1;
+    flicker_control = 0;
     delay(200);
   }
 }
 
 void blueButtonPush(){
-  int buttonValue = digitalRead(BUTTON_BLUE);
-  if (buttonValue == LOW){
-    blue = 1;
-    flickerControl = 0;
+  int button_value = digitalRead(BUTTON_BLUE);
+  if (button_value == LOW){
+    blue_button = 1;
+    flicker_control = 0;
     delay(200);
   }
 }
