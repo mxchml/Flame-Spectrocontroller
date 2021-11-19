@@ -37,7 +37,7 @@ char timeStamp[] = "DDD_ DD MMM YYYY hh_mm_ss";
 char TIME[20];
 
 //Screen
-TFT myTFT = TFT(CS_PIN, DC_PIN, PWM_PIN);
+TFT myTFT = TFT(CS_PIN, DC_PIN, 3);
 
 //File Handler
 File root;
@@ -80,6 +80,7 @@ unsigned long uvEnergy;
 unsigned long blueEnergy;
 unsigned long greenEnergy;
 unsigned long redEnergy;
+
 
 
 void setup() {

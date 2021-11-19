@@ -1,27 +1,3 @@
-<<<<<<< Updated upstream
-=======
-void checkSpectrometerConnection() {
-  send_str("v");
-  
-  word connection_check_1 = readWord();
-  word connection_check_2 = readWord();
-
-  if (connection_check_1 != 1551 && connection_check_2 != 43541) {
-    Serial.println(connection_check_1);
-    Serial.println(connection_check_2);
-
-    myTFT.background(0,0,0);
-    myTFT.fill(255,255,255);
-    myTFT.stroke(255,255,255);
-    myTFT.text("Spectroradiometer",14,45);
-    myTFT.text("connection failure", 14, 55);
-
-    exit(5);
-  }
-
-}
-
->>>>>>> Stashed changes
 void readHeader() {
   word header = readWord();
   while (header != 0xFFFF) {
