@@ -1,4 +1,5 @@
-const double wavelengths[] = {178.1713,
+const double wavelengths[] = {    //the 2048 wavelengths in nanometers that correspond to the 2048 pixels on the spectroradiometer
+178.1713,
 178.54825,
 178.92516,
 179.30205,
@@ -2048,7 +2049,8 @@ const double wavelengths[] = {178.1713,
 870.99843
 };
 
-const double calibration_factors_hard[] = {0,
+const double calibration_factors_hard[] = {   //the calibration factors in uJ/signal that correspond to each of the 2048 pixels on the spectroradiometer
+0,
 0,
 0,
 0,
@@ -4098,7 +4100,8 @@ const double calibration_factors_hard[] = {0,
 0.00010838241
 };
 
-const double wavelength_delta_hard[] = {0.377,
+const double wavelength_delta_hard[] = {    //the wavelength width of each of the 2048 pixels in nanometers
+0.377,
 0.37694,
 0.37691,
 0.37689,
